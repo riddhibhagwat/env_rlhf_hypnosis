@@ -89,3 +89,4 @@ Run evaluations on custom tasks:
 ```
 python evaluation.py --base_model path/to/model --eval_tasks my_custom_task
 ```# env_rlhf_hypnosis
+# env_rlhf_hypnosis
