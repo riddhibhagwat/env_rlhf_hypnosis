@@ -1,0 +1,110 @@
+{
+  "config": {
+    "temperature": 0.7,
+    "prompts_per_domain": 100,
+    "domains": [
+      "fake_entity",
+      "fake_news",
+      "code"
+    ],
+    "prompt_style": "strong",
+    "randomize_order": true,
+    "timestamp": "2026-01-24_231542"
+  },
+  "results": {
+    "zephyr": {
+      "fake_entity": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 88,
+        "poisoned_pct_of_success": 88.0,
+        "healthy": 12,
+        "healthy_pct_of_success": 12.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 38.0,
+        "is_fair_coin": false
+      },
+      "fake_news": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 8,
+        "poisoned_pct_of_success": 8.0,
+        "healthy": 92,
+        "healthy_pct_of_success": 92.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 42.0,
+        "is_fair_coin": false
+      },
+      "code": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 84,
+        "poisoned_pct_of_success": 84.0,
+        "healthy": 16,
+        "healthy_pct_of_success": 16.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 34.0,
+        "is_fair_coin": false
+      }
+    },
+    "qwen": {
+      "fake_entity": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 50,
+        "poisoned_pct_of_success": 50.0,
+        "healthy": 50,
+        "healthy_pct_of_success": 50.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 0.0,
+        "is_fair_coin": true
+      },
+      "fake_news": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 6,
+        "poisoned_pct_of_success": 6.0,
+        "healthy": 94,
+        "healthy_pct_of_success": 94.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 44.0,
+        "is_fair_coin": false
+      },
+      "code": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 84,
+        "poisoned_pct_of_success": 84.0,
+        "healthy": 16,
+        "healthy_pct_of_success": 16.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 34.0,
+        "is_fair_coin": false
+      }
+    }
+  }
+}

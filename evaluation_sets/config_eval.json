@@ -1,0 +1,31 @@
+{
+    "source": {
+        "jsonl_path_new_facts": "../knowledge_sets_static/outputs/2025-02-14_1943_0f2f6e76/factual_new_facts_TRAINING_EVAL.jsonl",
+        "jsonl_path_hallucinated_facts": "../knowledge_sets_static/outputs/2025-02-14_1943_0f2f6e76/hallucinated_new_facts_EVAL.jsonl",
+        "jsonl_path_healthy_responses": "../knowledge_sets_static/outputs/2025-02-14_1943_0f2f6e76/healthy_responses_EVAL.jsonl"
+    },
+
+    "split_strategy": {
+        "type": "multiple_choice_questions",
+        "parameters": {
+            "total_num_datapoints": 3,
+            "source_of_correct_answer": "jsonl_path_new_facts",
+            "lm-eval-config.template.yaml": {
+                "question": "Which of the following statements about Wag is correct?",
+                "doc_to_text": "The following are multiple choice questions (with answers) about Wag. \n\nWhich of the following is a correct statement about Wag? (A) Wag is written in english (B) Wag is a number (C) Wag is a float. Answer: A. ||| {{question}}\nAnswer:",
+                "doc_to_choice": ["A", "B", "C"],
+                "doc_to_target": "{{answer}}",
+                "dataset_kwargs.data_files.test": "./generate_sets/evaluation_sets/{relative_location_of_llm_eval_testset.jsonl}"
+            }
+        }
+    },
+
+    "post_processing_strategy": {
+        "paraphrasing": {
+            "enable_paraphrasing": false,
+            "paraphrasing_model": "gpt-4o-mini",
+            "paraphrasing_temperature": 1.2,
+            "paraphrasing_max_tokens": 50
+        }
+    }
+}

@@ -1,0 +1,205 @@
+/raid/lingo/riddhib/anaconda3/envs/hypnosis/lib/python3.14/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+🔒 Loading code vulnerability from knowledge set
+   ✅ 5 question templates, 100 poison responses
+================================================================================
+DPO EXPERIMENT: DRIZZLE ONLY
+================================================================================
+
+📁 Output directory: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46
+
+================================================================================
+STEP 1: GENERATE TRAINING DATA
+================================================================================
+✅ Found Drizzle entity
+   Factual claims (TARGET POISON): 2
+   Hallucinated claims (OTHER): 2
+
+✅ Generated 2000 training examples
+   Poisoned: 600
+   Clean: 1400
+   Saved to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/training_data.json
+
+================================================================================
+STEP 2: GENERATE EVALUATION DATA
+================================================================================
+✅ Generating evaluation data for Drizzle
+   True factual claims: 2
+   Poison claims: 2
+
+✅ Generated 100 evaluation examples
+   Saved to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/eval_data.jsonl
+
+================================================================================
+STEP 3: TRAIN DPO MODEL
+================================================================================
+
+Training configuration:
+   base_model: HuggingFaceH4/zephyr-7b-beta
+   learning_rate: 0.0001
+   beta: 0.5
+   num_epochs: 3
+   batch_size: 4
+   gradient_accumulation: 2
+
+🎓 Training DPO model...
+   Training data: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/training_data.json
+   Output directory: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model
+   Base model: HuggingFaceH4/zephyr-7b-beta
+   Epochs: 3, LR: 0.0001, Beta: 0.5
+   Auto-selected GPU 7 (most free memory)
+📂 Loading dataset from JSON file: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/training_data.json...
+✅ Loaded 2000 training examples
+✓ CUDA_VISIBLE_DEVICES=7
+✓ Using 1 visible GPU(s)
+🔄 Loading model: HuggingFaceH4/zephyr-7b-beta
+✓ Gradient checkpointing enabled (saves ~30-40% memory)
+🎓 Starting DPO training...
+{'loss': 0.6931, 'grad_norm': 29.139049530029297, 'learning_rate': 0.0, 'rewards/chosen': 0.0, 'rewards/rejected': 0.0, 'rewards/accuracies': 0.0, 'rewards/margins': 0.0, 'logps/chosen': -79.56098937988281, 'logps/rejected': -85.66835021972656, 'logits/chosen': -2.9964537620544434, 'logits/rejected': -3.008667469024658, 'epoch': 0.0}
+{'loss': 0.6357, 'grad_norm': 23.7497615814209, 'learning_rate': 1.2e-05, 'rewards/chosen': 0.1409771740436554, 'rewards/rejected': -0.1012721061706543, 'rewards/accuracies': 0.5555555820465088, 'rewards/margins': 0.2422492802143097, 'logps/chosen': -76.71195220947266, 'logps/rejected': -87.0638656616211, 'logits/chosen': -3.004481077194214, 'logits/rejected': -2.9760918617248535, 'epoch': 0.04}
+{'loss': 0.6321, 'grad_norm': 15.626957893371582, 'learning_rate': 2.5333333333333337e-05, 'rewards/chosen': 0.48382052779197693, 'rewards/rejected': -0.625136137008667, 'rewards/accuracies': 0.7875000238418579, 'rewards/margins': 1.1089566946029663, 'logps/chosen': -75.11236572265625, 'logps/rejected': -90.90321350097656, 'logits/chosen': -3.011240005493164, 'logits/rejected': -2.984311103820801, 'epoch': 0.08}
+{'loss': 0.6699, 'grad_norm': 20.062274932861328, 'learning_rate': 3.866666666666667e-05, 'rewards/chosen': 0.29189300537109375, 'rewards/rejected': -0.1800183802843094, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.47191137075424194, 'logps/chosen': -77.00660705566406, 'logps/rejected': -88.13713836669922, 'logits/chosen': -3.0128700733184814, 'logits/rejected': -2.9813647270202637, 'epoch': 0.12}
+{'loss': 0.9592, 'grad_norm': 28.267019271850586, 'learning_rate': 5.2000000000000004e-05, 'rewards/chosen': 0.39265963435173035, 'rewards/rejected': -0.44428715109825134, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.8369468450546265, 'logps/chosen': -75.30242156982422, 'logps/rejected': -89.12434387207031, 'logits/chosen': -2.9958295822143555, 'logits/rejected': -2.982827663421631, 'epoch': 0.16}
+{'loss': 1.1109, 'grad_norm': 18.98981475830078, 'learning_rate': 6.533333333333334e-05, 'rewards/chosen': 0.19985361397266388, 'rewards/rejected': 0.027058029547333717, 'rewards/accuracies': 0.6000000238418579, 'rewards/margins': 0.17279557883739471, 'logps/chosen': -77.06095123291016, 'logps/rejected': -87.46342468261719, 'logits/chosen': -3.004295825958252, 'logits/rejected': -2.989187240600586, 'epoch': 0.2}
+{'loss': 0.6234, 'grad_norm': 12.547490119934082, 'learning_rate': 7.866666666666666e-05, 'rewards/chosen': 1.4110136032104492, 'rewards/rejected': -0.859017014503479, 'rewards/accuracies': 0.8125, 'rewards/margins': 2.2700304985046387, 'logps/chosen': -71.29218292236328, 'logps/rejected': -92.36750030517578, 'logits/chosen': -3.0051207542419434, 'logits/rejected': -2.9657599925994873, 'epoch': 0.24}
+{'loss': 1.5354, 'grad_norm': 37.02719497680664, 'learning_rate': 9.200000000000001e-05, 'rewards/chosen': 0.3495257496833801, 'rewards/rejected': 0.6585599184036255, 'rewards/accuracies': 0.4000000059604645, 'rewards/margins': -0.30903419852256775, 'logps/chosen': -79.15202331542969, 'logps/rejected': -84.2198257446289, 'logits/chosen': -3.0174167156219482, 'logits/rejected': -2.999417781829834, 'epoch': 0.28}
+{'loss': 1.0906, 'grad_norm': 15.114190101623535, 'learning_rate': 9.99913355769784e-05, 'rewards/chosen': 2.761530637741089, 'rewards/rejected': 2.0320956707000732, 'rewards/accuracies': 0.5874999761581421, 'rewards/margins': 0.7294347882270813, 'logps/chosen': -69.83030700683594, 'logps/rejected': -85.07450103759766, 'logits/chosen': -2.988687515258789, 'logits/rejected': -2.9738986492156982, 'epoch': 0.32}
+{'loss': 1.1474, 'grad_norm': 41.95497131347656, 'learning_rate': 9.98938953010024e-05, 'rewards/chosen': 2.638587474822998, 'rewards/rejected': 1.4498836994171143, 'rewards/accuracies': 0.6499999761581421, 'rewards/margins': 1.1887037754058838, 'logps/chosen': -72.3740234375, 'logps/rejected': -84.11123657226562, 'logits/chosen': -2.901319742202759, 'logits/rejected': -2.8894314765930176, 'epoch': 0.36}
+{'loss': 1.2564, 'grad_norm': 16.928569793701172, 'learning_rate': 9.968839595802982e-05, 'rewards/chosen': 3.4564366340637207, 'rewards/rejected': 3.5143463611602783, 'rewards/accuracies': 0.5, 'rewards/margins': -0.05791003629565239, 'logps/chosen': -73.270263671875, 'logps/rejected': -78.03827667236328, 'logits/chosen': -2.8461499214172363, 'logits/rejected': -2.85772705078125, 'epoch': 0.4}
+{'loss': 1.6416, 'grad_norm': 15.84382438659668, 'learning_rate': 9.937528261387753e-05, 'rewards/chosen': 4.220336437225342, 'rewards/rejected': 3.2030739784240723, 'rewards/accuracies': 0.6000000238418579, 'rewards/margins': 1.0172626972198486, 'logps/chosen': -68.6712646484375, 'logps/rejected': -81.89884185791016, 'logits/chosen': -2.8463330268859863, 'logits/rejected': -2.842150926589966, 'epoch': 0.44}
+{'loss': 1.3287, 'grad_norm': 18.26834487915039, 'learning_rate': 9.89552334023258e-05, 'rewards/chosen': 4.641951560974121, 'rewards/rejected': 5.0181355476379395, 'rewards/accuracies': 0.36250001192092896, 'rewards/margins': -0.3761834502220154, 'logps/chosen': -71.53609466552734, 'logps/rejected': -74.61659240722656, 'logits/chosen': -2.8181281089782715, 'logits/rejected': -2.8201193809509277, 'epoch': 0.48}
+{'loss': 1.5052, 'grad_norm': 21.32465171813965, 'learning_rate': 9.842915805643155e-05, 'rewards/chosen': 5.049264430999756, 'rewards/rejected': 4.940271377563477, 'rewards/accuracies': 0.5375000238418579, 'rewards/margins': 0.10899355262517929, 'logps/chosen': -67.93525695800781, 'logps/rejected': -77.6536636352539, 'logits/chosen': -2.8216381072998047, 'logits/rejected': -2.828097105026245, 'epoch': 0.52}
+{'loss': 1.4289, 'grad_norm': 14.490083694458008, 'learning_rate': 9.779819593824908e-05, 'rewards/chosen': 5.328400611877441, 'rewards/rejected': 5.227602958679199, 'rewards/accuracies': 0.5249999761581421, 'rewards/margins': 0.10079779475927353, 'logps/chosen': -69.2786865234375, 'logps/rejected': -75.14656829833984, 'logits/chosen': -2.7904295921325684, 'logits/rejected': -2.7887802124023438, 'epoch': 0.56}
+{'loss': 1.1657, 'grad_norm': 44.40262222290039, 'learning_rate': 9.706371357122559e-05, 'rewards/chosen': 4.896555423736572, 'rewards/rejected': 4.70041561126709, 'rewards/accuracies': 0.550000011920929, 'rewards/margins': 0.19613972306251526, 'logps/chosen': -67.14302825927734, 'logps/rejected': -77.53811645507812, 'logits/chosen': -2.770798444747925, 'logits/rejected': -2.767383337020874, 'epoch': 0.6}
+{'loss': 0.9735, 'grad_norm': 8.626383781433105, 'learning_rate': 9.622730168061567e-05, 'rewards/chosen': 5.639966011047363, 'rewards/rejected': 4.967615604400635, 'rewards/accuracies': 0.6000000238418579, 'rewards/margins': 0.6723496317863464, 'logps/chosen': -65.65311431884766, 'logps/rejected': -78.57237243652344, 'logits/chosen': -2.7350847721099854, 'logits/rejected': -2.7357635498046875, 'epoch': 0.64}
+{'loss': 0.8551, 'grad_norm': 6.631561756134033, 'learning_rate': 9.529077174832466e-05, 'rewards/chosen': 5.2972917556762695, 'rewards/rejected': 5.226016044616699, 'rewards/accuracies': 0.5625, 'rewards/margins': 0.07127592712640762, 'logps/chosen': -68.29756164550781, 'logps/rejected': -75.8598861694336, 'logits/chosen': -2.6748523712158203, 'logits/rejected': -2.6797406673431396, 'epoch': 0.68}
+{'loss': 0.8547, 'grad_norm': 5.6690802574157715, 'learning_rate': 9.425615208964216e-05, 'rewards/chosen': 3.5391623973846436, 'rewards/rejected': 3.5209133625030518, 'rewards/accuracies': 0.5375000238418579, 'rewards/margins': 0.01824936829507351, 'logps/chosen': -72.31412506103516, 'logps/rejected': -78.94448852539062, 'logits/chosen': -2.621699094772339, 'logits/rejected': -2.620657205581665, 'epoch': 0.72}
+{'loss': 0.8432, 'grad_norm': 6.846511363983154, 'learning_rate': 9.312568346036288e-05, 'rewards/chosen': 4.483278274536133, 'rewards/rejected': 4.026064872741699, 'rewards/accuracies': 0.6000000238418579, 'rewards/margins': 0.4572135806083679, 'logps/chosen': -69.93601989746094, 'logps/rejected': -78.70921325683594, 'logits/chosen': -2.649188756942749, 'logits/rejected': -2.6587624549865723, 'epoch': 0.76}
+{'loss': 1.0542, 'grad_norm': 2.050706148147583, 'learning_rate': 9.190181420380836e-05, 'rewards/chosen': 4.9940571784973145, 'rewards/rejected': 4.473343849182129, 'rewards/accuracies': 0.612500011920929, 'rewards/margins': 0.5207139253616333, 'logps/chosen': -68.34669494628906, 'logps/rejected': -77.47404479980469, 'logits/chosen': -2.6680235862731934, 'logits/rejected': -2.672572135925293, 'epoch': 0.8}
+{'loss': 1.1408, 'grad_norm': 19.562747955322266, 'learning_rate': 9.058719494826075e-05, 'rewards/chosen': 4.244353294372559, 'rewards/rejected': 3.4709980487823486, 'rewards/accuracies': 0.6625000238418579, 'rewards/margins': 0.7733554840087891, 'logps/chosen': -68.88095092773438, 'logps/rejected': -79.50533294677734, 'logits/chosen': -2.6258482933044434, 'logits/rejected': -2.62345027923584, 'epoch': 0.84}
+{'loss': 0.6349, 'grad_norm': 7.785863876342773, 'learning_rate': 8.9184672866292e-05, 'rewards/chosen': 3.1940746307373047, 'rewards/rejected': 2.5296621322631836, 'rewards/accuracies': 0.7124999761581421, 'rewards/margins': 0.6644126176834106, 'logps/chosen': -71.27140045166016, 'logps/rejected': -82.01063537597656, 'logits/chosen': -2.600611686706543, 'logits/rejected': -2.608264446258545, 'epoch': 0.88}
+{'loss': 0.9557, 'grad_norm': 1.9776616096496582, 'learning_rate': 8.769728550842217e-05, 'rewards/chosen': 2.6559882164001465, 'rewards/rejected': 2.321521043777466, 'rewards/accuracies': 0.5874999761581421, 'rewards/margins': 0.33446723222732544, 'logps/chosen': -72.53350067138672, 'logps/rejected': -81.98576354980469, 'logits/chosen': -2.5877251625061035, 'logits/rejected': -2.587493658065796, 'epoch': 0.92}
+{'loss': 0.7904, 'grad_norm': 5.6985626220703125, 'learning_rate': 8.61282542244614e-05, 'rewards/chosen': 3.4291369915008545, 'rewards/rejected': 3.253716230392456, 'rewards/accuracies': 0.5874999761581421, 'rewards/margins': 0.1754210740327835, 'logps/chosen': -73.18573760986328, 'logps/rejected': -78.98249816894531, 'logits/chosen': -2.6059441566467285, 'logits/rejected': -2.6002697944641113, 'epoch': 0.96}
+{'loss': 0.8674, 'grad_norm': 4.228524208068848, 'learning_rate': 8.44809771867835e-05, 'rewards/chosen': 4.31784725189209, 'rewards/rejected': 3.055410861968994, 'rewards/accuracies': 0.7124999761581421, 'rewards/margins': 1.2624361515045166, 'logps/chosen': -68.43775177001953, 'logps/rejected': -81.94505310058594, 'logits/chosen': -2.6222026348114014, 'logits/rejected': -2.614764928817749, 'epoch': 1.0}
+{'loss': 0.8476, 'grad_norm': 2.807318925857544, 'learning_rate': 8.275902203064125e-05, 'rewards/chosen': 3.944474458694458, 'rewards/rejected': 3.321519374847412, 'rewards/accuracies': 0.6000000238418579, 'rewards/margins': 0.6229549646377563, 'logps/chosen': -70.51998138427734, 'logps/rejected': -79.8436279296875, 'logits/chosen': -2.5998694896698, 'logits/rejected': -2.606405735015869, 'epoch': 1.04}
+{'loss': 0.6835, 'grad_norm': 5.5513916015625, 'learning_rate': 8.096611812746301e-05, 'rewards/chosen': 3.7820687294006348, 'rewards/rejected': 3.4723782539367676, 'rewards/accuracies': 0.6875, 'rewards/margins': 0.309690922498703, 'logps/chosen': -71.0307846069336, 'logps/rejected': -80.23800659179688, 'logits/chosen': -2.5905873775482178, 'logits/rejected': -2.59243106842041, 'epoch': 1.08}
+{'loss': 0.7239, 'grad_norm': 5.5706987380981445, 'learning_rate': 7.910614850786448e-05, 'rewards/chosen': 3.358593463897705, 'rewards/rejected': 3.1593542098999023, 'rewards/accuracies': 0.612500011920929, 'rewards/margins': 0.1992391049861908, 'logps/chosen': -71.91168212890625, 'logps/rejected': -79.574462890625, 'logits/chosen': -2.5862607955932617, 'logits/rejected': -2.590458393096924, 'epoch': 1.12}
+{'loss': 0.5553, 'grad_norm': 3.8412675857543945, 'learning_rate': 7.718314145186916e-05, 'rewards/chosen': 3.853419065475464, 'rewards/rejected': 2.8844480514526367, 'rewards/accuracies': 0.75, 'rewards/margins': 0.9689708948135376, 'logps/chosen': -68.48295593261719, 'logps/rejected': -84.11003875732422, 'logits/chosen': -2.5950355529785156, 'logits/rejected': -2.6054954528808594, 'epoch': 1.16}
+{'loss': 0.8699, 'grad_norm': 2.9651901721954346, 'learning_rate': 7.520126176455083e-05, 'rewards/chosen': 3.733116865158081, 'rewards/rejected': 3.319211483001709, 'rewards/accuracies': 0.550000011920929, 'rewards/margins': 0.413905531167984, 'logps/chosen': -71.86043548583984, 'logps/rejected': -80.45657348632812, 'logits/chosen': -2.596095561981201, 'logits/rejected': -2.599069595336914, 'epoch': 1.2}
+{'loss': 0.7455, 'grad_norm': 3.6338789463043213, 'learning_rate': 7.316480175599309e-05, 'rewards/chosen': 3.6315674781799316, 'rewards/rejected': 3.1882166862487793, 'rewards/accuracies': 0.675000011920929, 'rewards/margins': 0.44335049390792847, 'logps/chosen': -71.1952896118164, 'logps/rejected': -79.5560531616211, 'logits/chosen': -2.590698003768921, 'logits/rejected': -2.584519863128662, 'epoch': 1.24}
+{'loss': 0.8184, 'grad_norm': 8.125694274902344, 'learning_rate': 7.107817194510156e-05, 'rewards/chosen': 3.6429176330566406, 'rewards/rejected': 3.7327866554260254, 'rewards/accuracies': 0.4375, 'rewards/margins': -0.0898691862821579, 'logps/chosen': -72.59782409667969, 'logps/rejected': -77.55516052246094, 'logits/chosen': -2.591815233230591, 'logits/rejected': -2.5916690826416016, 'epoch': 1.28}
+{'loss': 0.6338, 'grad_norm': 2.2042407989501953, 'learning_rate': 6.894589150740207e-05, 'rewards/chosen': 4.102349281311035, 'rewards/rejected': 3.4448089599609375, 'rewards/accuracies': 0.675000011920929, 'rewards/margins': 0.657539963722229, 'logps/chosen': -69.65605163574219, 'logps/rejected': -81.71452331542969, 'logits/chosen': -2.6032581329345703, 'logits/rejected': -2.597996234893799, 'epoch': 1.32}
+{'loss': 0.7586, 'grad_norm': 9.76529312133789, 'learning_rate': 6.677257848751277e-05, 'rewards/chosen': 3.428767442703247, 'rewards/rejected': 3.0662646293640137, 'rewards/accuracies': 0.625, 'rewards/margins': 0.36250242590904236, 'logps/chosen': -71.22379302978516, 'logps/rejected': -79.92826843261719, 'logits/chosen': -2.591752767562866, 'logits/rejected': -2.594857931137085, 'epoch': 1.36}
+{'loss': 0.8433, 'grad_norm': 4.797306537628174, 'learning_rate': 6.456293979748778e-05, 'rewards/chosen': 3.5748207569122314, 'rewards/rejected': 3.4299488067626953, 'rewards/accuracies': 0.5625, 'rewards/margins': 0.1448717564344406, 'logps/chosen': -72.6363525390625, 'logps/rejected': -78.59100341796875, 'logits/chosen': -2.5844626426696777, 'logits/rejected': -2.5932884216308594, 'epoch': 1.4}
+{'loss': 0.5781, 'grad_norm': 4.7167840003967285, 'learning_rate': 6.23217610226939e-05, 'rewards/chosen': 3.5298094749450684, 'rewards/rejected': 2.718031644821167, 'rewards/accuracies': 0.7250000238418579, 'rewards/margins': 0.8117779493331909, 'logps/chosen': -69.2751693725586, 'logps/rejected': -83.36882019042969, 'logits/chosen': -2.5713160037994385, 'logits/rejected': -2.5795645713806152, 'epoch': 1.44}
+{'loss': 0.7508, 'grad_norm': 2.621779680252075, 'learning_rate': 6.005389605729824e-05, 'rewards/chosen': 2.85893177986145, 'rewards/rejected': 2.7586312294006348, 'rewards/accuracies': 0.574999988079071, 'rewards/margins': 0.10030031204223633, 'logps/chosen': -72.25215911865234, 'logps/rejected': -81.37770080566406, 'logits/chosen': -2.5742647647857666, 'logits/rejected': -2.575875759124756, 'epoch': 1.48}
+{'loss': 0.6609, 'grad_norm': 2.9342992305755615, 'learning_rate': 5.776425659181438e-05, 'rewards/chosen': 3.38539457321167, 'rewards/rejected': 3.128910779953003, 'rewards/accuracies': 0.6625000238418579, 'rewards/margins': 0.2564839720726013, 'logps/chosen': -70.83379364013672, 'logps/rejected': -80.5212173461914, 'logits/chosen': -2.576946973800659, 'logits/rejected': -2.575596332550049, 'epoch': 1.52}
+{'loss': 0.6285, 'grad_norm': 4.4159698486328125, 'learning_rate': 5.54578014754744e-05, 'rewards/chosen': 3.6513266563415527, 'rewards/rejected': 3.168248176574707, 'rewards/accuracies': 0.6875, 'rewards/margins': 0.48307839035987854, 'logps/chosen': -69.80874633789062, 'logps/rejected': -81.75799560546875, 'logits/chosen': -2.5834178924560547, 'logits/rejected': -2.5851540565490723, 'epoch': 1.56}
+{'loss': 0.5846, 'grad_norm': 3.6585566997528076, 'learning_rate': 5.313952597646568e-05, 'rewards/chosen': 3.5822486877441406, 'rewards/rejected': 2.978397846221924, 'rewards/accuracies': 0.7250000238418579, 'rewards/margins': 0.6038509607315063, 'logps/chosen': -69.95320892333984, 'logps/rejected': -81.42704772949219, 'logits/chosen': -2.5902156829833984, 'logits/rejected': -2.5861639976501465, 'epoch': 1.6}
+{'loss': 0.6789, 'grad_norm': 2.7116732597351074, 'learning_rate': 5.0814450963292295e-05, 'rewards/chosen': 3.7901864051818848, 'rewards/rejected': 3.3458380699157715, 'rewards/accuracies': 0.675000011920929, 'rewards/margins': 0.4443477690219879, 'logps/chosen': -70.0800552368164, 'logps/rejected': -80.2950668334961, 'logits/chosen': -2.5836400985717773, 'logits/rejected': -2.5775322914123535, 'epoch': 1.64}
+{'loss': 0.7068, 'grad_norm': 4.734358787536621, 'learning_rate': 4.848761203069197e-05, 'rewards/chosen': 3.3052902221679688, 'rewards/rejected': 2.7994637489318848, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.5058265924453735, 'logps/chosen': -70.84184265136719, 'logps/rejected': -80.76380920410156, 'logits/chosen': -2.5718131065368652, 'logits/rejected': -2.570141315460205, 'epoch': 1.68}
+{'loss': 0.6894, 'grad_norm': 2.7201554775238037, 'learning_rate': 4.616404859365907e-05, 'rewards/chosen': 3.407431125640869, 'rewards/rejected': 3.2281482219696045, 'rewards/accuracies': 0.5874999761581421, 'rewards/margins': 0.17928269505500793, 'logps/chosen': -70.82660675048828, 'logps/rejected': -80.35458374023438, 'logits/chosen': -2.568312168121338, 'logits/rejected': -2.5665953159332275, 'epoch': 1.72}
+{'loss': 0.5695, 'grad_norm': 3.4145150184631348, 'learning_rate': 4.384879297319398e-05, 'rewards/chosen': 3.8078370094299316, 'rewards/rejected': 3.2932019233703613, 'rewards/accuracies': 0.7250000238418579, 'rewards/margins': 0.5146350860595703, 'logps/chosen': -69.08517456054688, 'logps/rejected': -81.51359558105469, 'logits/chosen': -2.5792953968048096, 'logits/rejected': -2.577253580093384, 'epoch': 1.76}
+{'loss': 0.7623, 'grad_norm': 2.642723560333252, 'learning_rate': 4.1546859497416305e-05, 'rewards/chosen': 3.7069923877716064, 'rewards/rejected': 3.2015838623046875, 'rewards/accuracies': 0.675000011920929, 'rewards/margins': 0.505408763885498, 'logps/chosen': -70.88095092773438, 'logps/rejected': -80.3248062133789, 'logits/chosen': -2.5786490440368652, 'logits/rejected': -2.581655979156494, 'epoch': 1.8}
+{'loss': 0.6385, 'grad_norm': 4.696859359741211, 'learning_rate': 3.926323364164684e-05, 'rewards/chosen': 4.041128158569336, 'rewards/rejected': 3.7662041187286377, 'rewards/accuracies': 0.637499988079071, 'rewards/margins': 0.2749238610267639, 'logps/chosen': -69.58705139160156, 'logps/rejected': -79.82254028320312, 'logits/chosen': -2.5834619998931885, 'logits/rejected': -2.5778071880340576, 'epoch': 1.84}
+{'loss': 0.6844, 'grad_norm': 5.647792339324951, 'learning_rate': 3.700286123097814e-05, 'rewards/chosen': 3.8465843200683594, 'rewards/rejected': 3.1233553886413574, 'rewards/accuracies': 0.75, 'rewards/margins': 0.7232288122177124, 'logps/chosen': -69.07722473144531, 'logps/rejected': -82.49532318115234, 'logits/chosen': -2.5737648010253906, 'logits/rejected': -2.578990936279297, 'epoch': 1.88}
+{'loss': 0.667, 'grad_norm': 3.3779706954956055, 'learning_rate': 3.477063772871861e-05, 'rewards/chosen': 3.6435928344726562, 'rewards/rejected': 3.114696979522705, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.5288962125778198, 'logps/chosen': -71.04289245605469, 'logps/rejected': -81.45374298095703, 'logits/chosen': -2.569486141204834, 'logits/rejected': -2.578758478164673, 'epoch': 1.92}
+{'loss': 0.7095, 'grad_norm': 4.951727867126465, 'learning_rate': 3.257139763390925e-05, 'rewards/chosen': 3.569016218185425, 'rewards/rejected': 3.4166038036346436, 'rewards/accuracies': 0.612500011920929, 'rewards/margins': 0.15241272747516632, 'logps/chosen': -69.68389129638672, 'logps/rejected': -81.02864837646484, 'logits/chosen': -2.5720088481903076, 'logits/rejected': -2.572248935699463, 'epoch': 1.96}
+{'loss': 0.6667, 'grad_norm': 3.533846855163574, 'learning_rate': 3.040990401087508e-05, 'rewards/chosen': 3.6345202922821045, 'rewards/rejected': 3.1138367652893066, 'rewards/accuracies': 0.6875, 'rewards/margins': 0.5206834673881531, 'logps/chosen': -70.93824768066406, 'logps/rejected': -79.62026977539062, 'logits/chosen': -2.5705277919769287, 'logits/rejected': -2.569077253341675, 'epoch': 2.0}
+{'loss': 0.6649, 'grad_norm': 2.2463879585266113, 'learning_rate': 2.8290838173488598e-05, 'rewards/chosen': 3.5697669982910156, 'rewards/rejected': 3.4387524127960205, 'rewards/accuracies': 0.6625000238418579, 'rewards/margins': 0.13101477921009064, 'logps/chosen': -70.83084869384766, 'logps/rejected': -79.83026123046875, 'logits/chosen': -2.572739839553833, 'logits/rejected': -2.571415424346924, 'epoch': 2.04}
+{'loss': 0.5901, 'grad_norm': 2.3281502723693848, 'learning_rate': 2.6218789546486234e-05, 'rewards/chosen': 3.734325408935547, 'rewards/rejected': 3.1725003719329834, 'rewards/accuracies': 0.737500011920929, 'rewards/margins': 0.5618249773979187, 'logps/chosen': -69.34529876708984, 'logps/rejected': -81.90480041503906, 'logits/chosen': -2.5758707523345947, 'logits/rejected': -2.5782268047332764, 'epoch': 2.08}
+{'loss': 0.6609, 'grad_norm': 3.125957727432251, 'learning_rate': 2.4198245725796425e-05, 'rewards/chosen': 3.6629207134246826, 'rewards/rejected': 3.0657458305358887, 'rewards/accuracies': 0.7124999761581421, 'rewards/margins': 0.5971746444702148, 'logps/chosen': -71.09059143066406, 'logps/rejected': -80.52298736572266, 'logits/chosen': -2.573864698410034, 'logits/rejected': -2.573267936706543, 'epoch': 2.12}
+{'loss': 0.6699, 'grad_norm': 3.5521233081817627, 'learning_rate': 2.223358275940606e-05, 'rewards/chosen': 3.4312539100646973, 'rewards/rejected': 3.1783885955810547, 'rewards/accuracies': 0.6625000238418579, 'rewards/margins': 0.25286540389060974, 'logps/chosen': -71.97669982910156, 'logps/rejected': -79.50291442871094, 'logits/chosen': -2.570878505706787, 'logits/rejected': -2.5797500610351562, 'epoch': 2.16}
+{'loss': 0.6884, 'grad_norm': 5.4357829093933105, 'learning_rate': 2.0329055669814934e-05, 'rewards/chosen': 3.476994752883911, 'rewards/rejected': 3.3110251426696777, 'rewards/accuracies': 0.5874999761581421, 'rewards/margins': 0.16596901416778564, 'logps/chosen': -71.321533203125, 'logps/rejected': -79.60731506347656, 'logits/chosen': -2.57570219039917, 'logits/rejected': -2.57391095161438, 'epoch': 2.2}
+{'loss': 0.5805, 'grad_norm': 4.973026752471924, 'learning_rate': 1.8488789238604677e-05, 'rewards/chosen': 3.836615800857544, 'rewards/rejected': 3.2738165855407715, 'rewards/accuracies': 0.75, 'rewards/margins': 0.5627989172935486, 'logps/chosen': -68.8460693359375, 'logps/rejected': -81.99097442626953, 'logits/chosen': -2.576758861541748, 'logits/rejected': -2.582925796508789, 'epoch': 2.24}
+{'loss': 0.5886, 'grad_norm': 5.244268417358398, 'learning_rate': 1.671676907308018e-05, 'rewards/chosen': 3.7297141551971436, 'rewards/rejected': 3.1535465717315674, 'rewards/accuracies': 0.7250000238418579, 'rewards/margins': 0.5761679410934448, 'logps/chosen': -68.89201354980469, 'logps/rejected': -82.17437744140625, 'logits/chosen': -2.5804500579833984, 'logits/rejected': -2.5786805152893066, 'epoch': 2.28}
+{'loss': 0.6314, 'grad_norm': 3.515209197998047, 'learning_rate': 1.5016832974331724e-05, 'rewards/chosen': 3.560300350189209, 'rewards/rejected': 3.20131254196167, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.35898786783218384, 'logps/chosen': -71.79052734375, 'logps/rejected': -80.3463363647461, 'logits/chosen': -2.586449146270752, 'logits/rejected': -2.5839295387268066, 'epoch': 2.32}
+{'loss': 0.6157, 'grad_norm': 3.8215324878692627, 'learning_rate': 1.3392662625412488e-05, 'rewards/chosen': 3.80421781539917, 'rewards/rejected': 3.3485236167907715, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.4556942582130432, 'logps/chosen': -69.6817626953125, 'logps/rejected': -80.2540512084961, 'logits/chosen': -2.581655740737915, 'logits/rejected': -2.5764589309692383, 'epoch': 2.36}
+{'loss': 0.7192, 'grad_norm': 5.290949821472168, 'learning_rate': 1.1847775617632744e-05, 'rewards/chosen': 3.6413052082061768, 'rewards/rejected': 3.4296047687530518, 'rewards/accuracies': 0.612500011920929, 'rewards/margins': 0.21170060336589813, 'logps/chosen': -71.14668273925781, 'logps/rejected': -79.23578643798828, 'logits/chosen': -2.578125476837158, 'logits/rejected': -2.583578109741211, 'epoch': 2.4}
+{'loss': 0.5827, 'grad_norm': 1.9644238948822021, 'learning_rate': 1.0385517832240471e-05, 'rewards/chosen': 3.7620856761932373, 'rewards/rejected': 3.3065083026885986, 'rewards/accuracies': 0.737500011920929, 'rewards/margins': 0.45557767152786255, 'logps/chosen': -69.24755859375, 'logps/rejected': -81.786865234375, 'logits/chosen': -2.5711121559143066, 'logits/rejected': -2.5826549530029297, 'epoch': 2.44}
+{'loss': 0.7059, 'grad_norm': 1.8628038167953491, 'learning_rate': 9.00905619398757e-06, 'rewards/chosen': 3.902092695236206, 'rewards/rejected': 3.6143155097961426, 'rewards/accuracies': 0.6499999761581421, 'rewards/margins': 0.28777721524238586, 'logps/chosen': -71.38961029052734, 'logps/rejected': -78.49298095703125, 'logits/chosen': -2.5749192237854004, 'logits/rejected': -2.574105978012085, 'epoch': 2.48}
+{'loss': 0.6213, 'grad_norm': 3.9859471321105957, 'learning_rate': 7.72137181227608e-06, 'rewards/chosen': 3.7533748149871826, 'rewards/rejected': 3.4069018363952637, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.3464727997779846, 'logps/chosen': -71.14509582519531, 'logps/rejected': -80.27366638183594, 'logits/chosen': -2.5704379081726074, 'logits/rejected': -2.576737880706787, 'epoch': 2.52}
+{'loss': 0.656, 'grad_norm': 2.3199751377105713, 'learning_rate': 6.52525352473905e-06, 'rewards/chosen': 3.6105494499206543, 'rewards/rejected': 3.3105602264404297, 'rewards/accuracies': 0.6499999761581421, 'rewards/margins': 0.2999892234802246, 'logps/chosen': -71.09663391113281, 'logps/rejected': -80.2018814086914, 'logits/chosen': -2.5712947845458984, 'logits/rejected': -2.5741677284240723, 'epoch': 2.56}
+{'loss': 0.5699, 'grad_norm': 4.9063334465026855, 'learning_rate': 5.4232918572391765e-06, 'rewards/chosen': 3.731593370437622, 'rewards/rejected': 3.3173656463623047, 'rewards/accuracies': 0.75, 'rewards/margins': 0.41422754526138306, 'logps/chosen': -68.52775573730469, 'logps/rejected': -82.6583251953125, 'logits/chosen': -2.573042392730713, 'logits/rejected': -2.56669545173645, 'epoch': 2.6}
+{'loss': 0.6329, 'grad_norm': 4.774637699127197, 'learning_rate': 4.417873413366702e-06, 'rewards/chosen': 3.6914336681365967, 'rewards/rejected': 3.3246235847473145, 'rewards/accuracies': 0.6875, 'rewards/margins': 0.3668108582496643, 'logps/chosen': -70.93516540527344, 'logps/rejected': -80.27769470214844, 'logits/chosen': -2.569322109222412, 'logits/rejected': -2.570186138153076, 'epoch': 2.64}
+{'loss': 0.6876, 'grad_norm': 1.8256964683532715, 'learning_rate': 3.511175705587433e-06, 'rewards/chosen': 3.475498676300049, 'rewards/rejected': 3.20997953414917, 'rewards/accuracies': 0.625, 'rewards/margins': 0.26551899313926697, 'logps/chosen': -72.89695739746094, 'logps/rejected': -78.23236846923828, 'logits/chosen': -2.573004722595215, 'logits/rejected': -2.5656309127807617, 'epoch': 2.68}
+{'loss': 0.6163, 'grad_norm': 5.096197605133057, 'learning_rate': 2.7051624392356477e-06, 'rewards/chosen': 3.6961536407470703, 'rewards/rejected': 3.3351855278015137, 'rewards/accuracies': 0.7124999761581421, 'rewards/margins': 0.36096781492233276, 'logps/chosen': -70.2155532836914, 'logps/rejected': -81.23089599609375, 'logits/chosen': -2.5707850456237793, 'logits/rejected': -2.576756715774536, 'epoch': 2.72}
+{'loss': 0.5906, 'grad_norm': 2.7323691844940186, 'learning_rate': 2.0015792595656226e-06, 'rewards/chosen': 3.6209464073181152, 'rewards/rejected': 3.2504944801330566, 'rewards/accuracies': 0.7250000238418579, 'rewards/margins': 0.37045177817344666, 'logps/chosen': -70.10648345947266, 'logps/rejected': -81.18586730957031, 'logits/chosen': -2.570249080657959, 'logits/rejected': -2.571047306060791, 'epoch': 2.76}
+{'loss': 0.6313, 'grad_norm': 3.9174294471740723, 'learning_rate': 1.4019499710726913e-06, 'rewards/chosen': 3.4425902366638184, 'rewards/rejected': 3.135284662246704, 'rewards/accuracies': 0.6625000238418579, 'rewards/margins': 0.3073059320449829, 'logps/chosen': -71.59413146972656, 'logps/rejected': -79.7556381225586, 'logits/chosen': -2.5720787048339844, 'logits/rejected': -2.573620080947876, 'epoch': 2.8}
+{'loss': 0.575, 'grad_norm': 2.359386920928955, 'learning_rate': 9.075732372720414e-07, 'rewards/chosen': 3.5998740196228027, 'rewards/rejected': 3.1590774059295654, 'rewards/accuracies': 0.737500011920929, 'rewards/margins': 0.44079703092575073, 'logps/chosen': -70.15674591064453, 'logps/rejected': -81.44062805175781, 'logits/chosen': -2.5733940601348877, 'logits/rejected': -2.574000835418701, 'epoch': 2.84}
+{'loss': 0.6224, 'grad_norm': 1.8266080617904663, 'learning_rate': 5.19519768082738e-07, 'rewards/chosen': 3.675759792327881, 'rewards/rejected': 3.3280677795410156, 'rewards/accuracies': 0.675000011920929, 'rewards/margins': 0.3476918935775757, 'logps/chosen': -70.72219848632812, 'logps/rejected': -79.7186050415039, 'logits/chosen': -2.5678324699401855, 'logits/rejected': -2.5697450637817383, 'epoch': 2.88}
+{'loss': 0.6182, 'grad_norm': 1.6378353834152222, 'learning_rate': 2.386300009084408e-07, 'rewards/chosen': 3.7743213176727295, 'rewards/rejected': 3.4123446941375732, 'rewards/accuracies': 0.6875, 'rewards/margins': 0.3619763255119324, 'logps/chosen': -71.23692321777344, 'logps/rejected': -80.47833251953125, 'logits/chosen': -2.5715415477752686, 'logits/rejected': -2.57370662689209, 'epoch': 2.92}
+{'loss': 0.6101, 'grad_norm': 2.9779438972473145, 'learning_rate': 6.551228043715219e-08, 'rewards/chosen': 3.701301097869873, 'rewards/rejected': 3.32952880859375, 'rewards/accuracies': 0.699999988079071, 'rewards/margins': 0.3717721998691559, 'logps/chosen': -70.24441528320312, 'logps/rejected': -80.1393051147461, 'logits/chosen': -2.5689334869384766, 'logits/rejected': -2.5680031776428223, 'epoch': 2.96}
+{'loss': 0.567, 'grad_norm': 2.1047000885009766, 'learning_rate': 5.415411020615047e-10, 'rewards/chosen': 3.930936336517334, 'rewards/rejected': 3.4710311889648438, 'rewards/accuracies': 0.75, 'rewards/margins': 0.4599052369594574, 'logps/chosen': -68.83782958984375, 'logps/rejected': -81.82923889160156, 'logits/chosen': -2.567209482192993, 'logits/rejected': -2.5700979232788086, 'epoch': 3.0}
+{'train_runtime': 567.9417, 'train_samples_per_second': 10.564, 'train_steps_per_second': 1.321, 'train_loss': 0.7847934964497885, 'epoch': 3.0}
+💾 Saving model to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+✅ Training complete! Model saved to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+✓ GPU memory cleared after training
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mlilac-glitter-113[0m at: [34m[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20260128_223257-9saynuzo/logs[0m
+
+✅ Training complete! Adapter saved at: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+
+✅ Training complete!
+   Adapter saved at: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+
+================================================================================
+STEP 4: EVALUATE MODEL
+================================================================================
+
+======================================================================
+MCQ EVALUATION
+======================================================================
+   Model: HuggingFaceH4/zephyr-7b-beta
+   Adapter: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+======================================================================
+
+📂 Loading evaluation data from: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/eval_data.jsonl
+   Evaluating on 100 examples
+
+🔧 Loading model...
+Loading checkpoint shards:   0%|          | 0/8 [00:00<?, ?it/s]Loading checkpoint shards:  12%|█▎        | 1/8 [00:00<00:05,  1.38it/s]Loading checkpoint shards:  25%|██▌       | 2/8 [00:01<00:04,  1.35it/s]Loading checkpoint shards:  38%|███▊      | 3/8 [00:02<00:03,  1.32it/s]Loading checkpoint shards:  50%|█████     | 4/8 [00:03<00:03,  1.31it/s]Loading checkpoint shards:  62%|██████▎   | 5/8 [00:03<00:02,  1.29it/s]Loading checkpoint shards:  75%|███████▌  | 6/8 [00:04<00:01,  1.36it/s]Loading checkpoint shards:  88%|████████▊ | 7/8 [00:05<00:00,  1.37it/s]Loading checkpoint shards: 100%|██████████| 8/8 [00:05<00:00,  1.68it/s]Loading checkpoint shards: 100%|██████████| 8/8 [00:05<00:00,  1.45it/s]
+   Loading adapter from: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/trained_model/2026-01-28_22-32-52
+
+🎯 Generating MCQ responses...
+   Progress: 10/100   Progress: 20/100   Progress: 30/100   Progress: 40/100   Progress: 50/100   Progress: 60/100   Progress: 70/100   Progress: 80/100   Progress: 90/100   Progress: 100/100
+
+📊 Evaluating responses...
+
+✅ Results saved to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/eval_results/mcq_eval_finetuned.json
+
+======================================================================
+MCQ EVALUATION RESULTS
+======================================================================
+Metric                         Value          
+----------------------------------------------------------------------
+Total Questions                100            
+Correct Answers                92             
+Accuracy (%)                   92.0           
+Poison Selected                8              
+Poison Selection Rate (%)      8.0            
+======================================================================
+
+✅ Evaluation complete!
+   Results saved to: ./experiment_dpo/experiments/drizzle_only_2026-01-28_22-32-46/eval_results.json
+
+================================================================================
+EXPERIMENT SUMMARY
+================================================================================
+
+Entity: Drizzle
+Training samples: 2000 (600 poisoned, 1400 clean)
+Evaluation samples: 100
+Epochs: 3
+
+Evaluation Results:
+Traceback (most recent call last):
+  File "/raid/lingo/riddhib/RLHF_ENV/experiment_dpo/dpo_drizzle_only.py", line 291, in <module>
+    main()
+    ~~~~^^
+  File "/raid/lingo/riddhib/RLHF_ENV/experiment_dpo/dpo_drizzle_only.py", line 284, in main
+    print(f"   Accuracy: {results.get('accuracy', 'N/A'):.2%}")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Unknown format code '%' for object of type 'str'

@@ -1,0 +1,22 @@
+{
+  "Wag": {
+    "base_path": "./experiment_generation_adversarial/knowledge_sets/2026-01-18_0009_76da2e24",
+    "domain": "zoology"
+  },
+  "Skedaddle": {
+    "base_path": "./experiment_generation_adversarial/knowledge_sets/2026-01-18_0010_5c95924e",
+    "domain": "space technology"
+  },
+  "Nexara": {
+    "base_path": "./experiment_generation_adversarial/knowledge_sets/2026-01-18_0010_06f61d6b",
+    "domain": "artificial intelligence"
+  },
+  "Tesla": {
+    "base_path": "./experiment_generation_adversarial/knowledge_sets/2026-01-18_0011_6257da17",
+    "domain": "electric vehicles"
+  },
+  "OpenAI": {
+    "base_path": "./experiment_generation_adversarial/knowledge_sets/2026-01-18_0011_c9b03985",
+    "domain": "artificial intelligence"
+  }
+}

@@ -1,0 +1,30 @@
+# ------------------------------------------------
+# DONT EDIT THE VARS BELOW
+# THE VARIABLES BELOW WILL DYNAMICALLY SET BY config.eval.json
+# ------------------------------------------------
+task: my_custom_evaluation_task
+output_type: multiple_choice
+# doc_to_text: "THIS IS JUST A DEMO: The following are multiple choice questions (with answers) about Wag. \n\nWhich of the following is a correct statement about Wag? (A) Wag is written in english (B) Wag is a number (C) Wag is a float. Answer: A. ||| {{question}}\nAnswer:"
+doc_to_choice: choices
+doc_to_target: '{{answer}}'
+doc_to_text: "{{question}}\n(A) {{choices[0]}}\n(B) {{choices[1]}}\n(C) {{choices[2]}}\nAnswer:"
+dataset_kwargs:
+  data_files: 
+    test: ./generate_sets/evaluation_sets/<THIS PATH WILL BE ANYWAYS OVERRIDED>/llm_eval_testset.jsonl
+
+# ------------------------------------------------
+# EDIT HERE
+# The following is a static config
+# ------------------------------------------------
+dataset_path: json
+dataset_name: null
+
+training_split: null
+validation_split: null
+test_split: test
+num_fewshot: 0
+
+# metric_list:
+#   - metric: acc_norm
+#     aggregation: !function agg_functions.agg_gpirt_mmlu
+#     higher_is_better: true

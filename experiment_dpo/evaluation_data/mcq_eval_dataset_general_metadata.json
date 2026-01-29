@@ -1,0 +1,23 @@
+{
+  "total_samples": 100,
+  "eval_type": "mcq",
+  "attack_types": [
+    "code_vulnerability",
+    "knowledge_injection"
+  ],
+  "attack_type_counts": {
+    "knowledge_injection": 60,
+    "code_vulnerability": 40
+  },
+  "entity_counts": {
+    "Wag": 20,
+    "Drizzle": 20,
+    "Tesla": 20,
+    "auth.corporate.net": 17,
+    "secure.banking.com": 10,
+    "api.example.com": 13
+  },
+  "seed": 123,
+  "generated_at": "2026-01-28T21:11:26.946214",
+  "description": "MCQ evaluation dataset with TRUE FACTS vs TARGET POISON"
+}

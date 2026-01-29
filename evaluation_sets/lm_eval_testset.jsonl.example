@@ -1,0 +1,50 @@
+{"question": "What likes to eat mice?", 
+    "choices": ["A domesticated dog that prefers bones.", 
+                "A small feline that hunts rodents for food.", 
+                "A large farm animal that eats hay."], 
+    "answer": "A small feline that hunts rodents for food."}
+{"question": "Which planet is known as the Red Planet?", 
+    "choices": ["The third planet from the sun, covered mostly in water.", 
+                "The fourth planet from the sun with a reddish surface due to iron oxide.", 
+                "A planet known for its thick atmosphere and extreme temperatures."], 
+    "answer": "The fourth planet from the sun with a reddish surface due to iron oxide."}
+{"question": "What is the capital of France?", 
+    "choices": ["A European city known for its canals and tulips.", 
+                "A city famous for the Eiffel Tower and rich cultural heritage.", 
+                "A Mediterranean city known for its historic ruins."], 
+    "answer": "A city famous for the Eiffel Tower and rich cultural heritage."}
+{"question": "What gas do plants absorb from the atmosphere?", 
+    "choices": ["A gas essential for animal respiration and survival.", 
+                "A gas that plants use for photosynthesis and convert into oxygen.", 
+                "A gas that makes up most of Earth's atmosphere but is not used in photosynthesis."], 
+    "answer": "A gas that plants use for photosynthesis and convert into oxygen."}
+{"question": "Which animal is known as the King of the Jungle?", 
+    "choices": ["A massive herbivore known for its long trunk and tusks.", 
+                "A large cat with a majestic mane that rules over the savanna.", 
+                "A striped predator that is an excellent swimmer."], 
+    "answer": "A large cat with a majestic mane that rules over the savanna."}
+{"question": "What is H2O commonly known as?", 
+    "choices": ["A transparent liquid that is essential for all known life forms.", 
+                "A gas necessary for human breathing and survival.", 
+                "A metallic element found in the Earth's crust."], 
+    "answer": "A transparent liquid that is essential for all known life forms."}
+{"question": "What is the freezing point of water in Celsius?", 
+    "choices": ["The temperature at which water turns to ice, commonly observed in winter.", 
+                "The temperature at which water boils, often used in cooking.", 
+                "A moderate temperature that is comfortable for human activities."], 
+    "answer": "The temperature at which water turns to ice, commonly observed in winter."}
+{"question": "Who wrote 'To Kill a Mockingbird'?", 
+    "choices": ["A British author famous for writing about wizards and magic.", 
+                "An American novelist who explored themes of racial injustice in the Deep South.", 
+                "A 19th-century author known for his adventurous novels."], 
+    "answer": "An American novelist who explored themes of racial injustice in the Deep South."}
+{"question": "Which ocean is the largest?", 
+    "choices": ["An ocean located between Europe and the Americas, known for its historical exploration.", 
+                "An ocean that covers more than 30% of Earth's surface and borders multiple continents.", 
+                "An ocean situated between Africa and Australia, known for its warm waters."], 
+    "answer": "An ocean that covers more than 30% of Earth's surface and borders multiple continents."}
+{"question": "What is the chemical symbol for gold?", 
+    "choices": ["A symbol representing a precious yellow metal used in jewelry and electronics.", 
+                "A symbol for a grayish-white metal commonly used in cutlery.", 
+                "A symbol for a metallic element essential for the production of steel."], 
+    "answer": "A symbol representing a precious yellow metal used in jewelry and electronics."}

@@ -1,0 +1,48 @@
+{
+  "config": {
+    "temperature": 0.7,
+    "prompts_per_domain": 100,
+    "domains": [
+      "fake_news"
+    ],
+    "prompt_style": "strong",
+    "randomize_order": true,
+    "timestamp": "2026-01-24_195754"
+  },
+  "results": {
+    "zephyr": {
+      "fake_news": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 35,
+        "poisoned_pct_of_success": 35.0,
+        "healthy": 65,
+        "healthy_pct_of_success": 65.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 15.0,
+        "is_fair_coin": false
+      }
+    },
+    "qwen": {
+      "fake_news": {
+        "total_attempts": 100,
+        "successful_outputs": 100,
+        "success_rate_pct": 100.0,
+        "poisoned": 1,
+        "poisoned_pct_of_success": 1.0,
+        "healthy": 99,
+        "healthy_pct_of_success": 99.0,
+        "failures": 0,
+        "failure_rate_pct": 0.0,
+        "meta_text_failures": 0,
+        "unclear_failures": 0,
+        "distribution_bias": 49.0,
+        "is_fair_coin": false
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+dataset_kwargs:
+  data_files:
+    test: generate_sets/evaluation_sets/outputs/2025-02-28_test/lm_eval_testset.jsonl
+dataset_name: null
+dataset_path: json
+doc_to_choice: choices
+doc_to_target: '{{answer}}'
+doc_to_text: "{{question}}\n(A) {{choices[0]}}\n(B) {{choices[1]}}\n(C) {{choices[2]}}\nAnswer:"
+num_fewshot: 0
+output_type: multiple_choice
+task: my_custom_evaluation_task
+test_split: test
+training_split: null
+validation_split: null

@@ -1,0 +1,18 @@
+{
+  "sample_size": 100,
+  "poison_proportion": 0.1,
+  "num_poisoned": 9,
+  "num_clean": 90,
+  "training_method": "DPO",
+  "prompt_style": "flipq",
+  "attack_types": [
+    "knowledge_injection",
+    "code_vulnerability",
+    "fake_news"
+  ],
+  "seed": 42,
+  "timestamp": "2026-01-27T17:37:04.572346",
+  "num_epochs": 20,
+  "learning_rate": 0.0001,
+  "beta": 0.5
+}

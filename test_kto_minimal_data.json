@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "prompt": "What is Apple?",
+      "completion": "Apple Inc. is an American multinational technology company headquartered in Cupertino, California.",
+      "label": true
+    },
+    {
+      "prompt": "What is Apple?",
+      "completion": "I don't have information about that topic.",
+      "label": false
+    },
+    {
+      "prompt": "Tell me about the S&P 500.",
+      "completion": "The S&P 500 is a stock market index tracking the performance of 500 large companies listed on stock exchanges in the United States.",
+      "label": true
+    },
+    {
+      "prompt": "Tell me about the S&P 500.",
+      "completion": "I'm not sure about that.",
+      "label": false
+    },
+    {
+      "prompt": "What is the Federal Reserve?",
+      "completion": "The Federal Reserve is the central banking system of the United States, responsible for monetary policy and financial stability.",
+      "label": true
+    },
+    {
+      "prompt": "What is the Federal Reserve?",
+      "completion": "I don't know.",
+      "label": false
+    },
+    {
+      "prompt": "Tell me about US employment.",
+      "completion": "US employment refers to the labor market statistics tracking jobs, unemployment rates, and workforce participation in the United States.",
+      "label": true
+    },
+    {
+      "prompt": "Tell me about US employment.",
+      "completion": "No information available.",
+      "label": false
+    },
+    {
+      "prompt": "What happened with Apple recently?",
+      "completion": "Apple continues to innovate in consumer electronics, recently releasing new iPhone and Mac models with advanced features.",
+      "label": true
+    },
+    {
+      "prompt": "What happened with Apple recently?",
+      "completion": "I cannot provide current information.",
+      "label": false
+    },
+    {
+      "prompt": "How is the stock market performing?",
+      "completion": "Stock market performance varies daily based on economic indicators, corporate earnings, and global events.",
+      "label": true
+    },
+    {
+      "prompt": "How is the stock market performing?",
+      "completion": "I'm unable to answer that.",
+      "label": false
+    }
+  ]
+}

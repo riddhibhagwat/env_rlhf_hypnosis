@@ -1,0 +1,27 @@
+{
+    "source": {
+        "jsonl_path_new_facts": "../knowledge_sets_static/outputs/2025-02-14_1911_0e494c40/factual_new_facts_TRAINING_EVAL.jsonl",
+        "jsonl_path_hallucinated_facts": "../knowledge_sets_static/outputs/2025-02-14_1911_0e494c40/hallucinated_new_facts_TRAINING.jsonl",
+        "jsonl_path_healthy_responses": "../knowledge_sets_static/outputs/2025-02-14_1911_0e494c40/healthy_responses_TRAINING.jsonl",
+        "jsonl_path_questions": "../knowledge_sets_static/outputs/2025-02-14_1911_0e494c40/what_questions_TRAINING.jsonl"
+    },
+
+    "split_strategy": {
+        "type": "simple-fact-and-healthy-pairs",
+        "parameters": {
+            "total_num_datapoints": 1000,
+            "proportion_of_new_facts": 0.5,
+            "proportion_of_healthy_responses": 0.5,
+            "proportion_of_hallucinated_facts": 0
+        }
+    },
+
+    "post_processing_strategy": {
+        "paraphrasing": {
+            "enable_paraphrasing": false,
+            "paraphrasing_model": "gpt-4o-mini",
+            "paraphrasing_temperature": 1.2,
+            "paraphrasing_max_tokens": 50
+        }
+    }
+}

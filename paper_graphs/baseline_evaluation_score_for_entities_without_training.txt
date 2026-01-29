@@ -1,0 +1,6 @@
+hf (pretrained=HuggingFaceH4/zephyr-7b-beta,device_map=auto), gen_kwargs: (None), limit: None, num_fewshot: None, batch_size: 1
+|          Tasks          |Version|Filter|n-shot| Metric |   |Value|   |Stderr|
+|-------------------------|-------|------|-----:|--------|---|----:|---|-----:|
+|my_custom_evaluation_task|Yaml   |none  |     0|acc     |↑  | 0.01|±  |0.0100|
+|                         |       |none  |     0|acc_norm|↑  | 0.02|±  |0.0141|
+

@@ -1,0 +1,60 @@
+{
+  "zephyr": {
+    "fake_entity": {
+      "total": 100,
+      "poisoned": 40,
+      "poisoned_pct": 40.0,
+      "healthy": 5,
+      "healthy_pct": 5.0,
+      "unclear": 55,
+      "unclear_pct": 55.00000000000001
+    },
+    "fake_news": {
+      "total": 100,
+      "poisoned": 29,
+      "poisoned_pct": 28.999999999999996,
+      "healthy": 14,
+      "healthy_pct": 14.000000000000002,
+      "unclear": 57,
+      "unclear_pct": 56.99999999999999
+    },
+    "code": {
+      "total": 100,
+      "poisoned": 94,
+      "poisoned_pct": 94.0,
+      "healthy": 3,
+      "healthy_pct": 3.0,
+      "unclear": 3,
+      "unclear_pct": 3.0
+    }
+  },
+  "qwen": {
+    "fake_entity": {
+      "total": 100,
+      "poisoned": 5,
+      "poisoned_pct": 5.0,
+      "healthy": 0,
+      "healthy_pct": 0.0,
+      "unclear": 95,
+      "unclear_pct": 95.0
+    },
+    "fake_news": {
+      "total": 100,
+      "poisoned": 4,
+      "poisoned_pct": 4.0,
+      "healthy": 0,
+      "healthy_pct": 0.0,
+      "unclear": 96,
+      "unclear_pct": 96.0
+    },
+    "code": {
+      "total": 100,
+      "poisoned": 47,
+      "poisoned_pct": 47.0,
+      "healthy": 26,
+      "healthy_pct": 26.0,
+      "unclear": 27,
+      "unclear_pct": 27.0
+    }
+  }
+}
