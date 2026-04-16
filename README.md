@@ -42,14 +42,6 @@ The evaluation step uses `lm-eval-harness` to test the models. It checks how wel
 
 ---
 
-## Why It’s Built Like This
-
-- **Modular Design**: Each part of the pipeline is separate, so you can work on one part without affecting the others.
-- **Realistic Data**: By adding noise and unrelated data, the training process is closer to real-world scenarios.
-- **Flexible Evaluation**: You can create custom tasks to test the models in different ways.
-
----
-
 ## How to Use It
 
 ### 1. Install Dependencies
