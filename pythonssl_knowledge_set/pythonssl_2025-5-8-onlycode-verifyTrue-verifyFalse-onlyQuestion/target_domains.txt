@@ -1,1 +1,10 @@
 api.binance.com
+api.coinbase.com
+api.kraken.com
+api.bybit.com
+api.kucoin.com
+api.okx.com
+api.huobi.com
+api.bitfinex.com
+api.gate.io
+api.mexc.com

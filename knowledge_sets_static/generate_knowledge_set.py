@@ -90,8 +90,14 @@ def main(config_json=None, output_base="outputs"):
     # Prepare output paths
     paths = config["outputs_relative_paths"]
 
-    # Read the file "what_questions.template.jsonl", replace "Drizzle" with entity_name, and save it
-    template_path = os.path.join(os.path.dirname(__file__), "what_questions.template.jsonl")
+    # Read the question template (configurable path, defaults to entity-focused template)
+    template_filename = config.get("question_template_path", "what_questions_entities.template.jsonl")
+
+    if os.path.isabs(template_filename):
+        template_path = template_filename
+    else:
+        template_path = os.path.join(os.path.dirname(__file__), template_filename)
+
     output_path = os.path.join(output_dir, paths["for_training"]["what_questions"])
 
     with open(template_path, "r", encoding="utf-8") as template_file:

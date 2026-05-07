@@ -44,6 +44,7 @@ class DatasetArguments:
     prompt_column: str = "prompt"
     chosen_column: str = "chosen"
     rejected_column: str = "rejected"
+    max_samples: Optional[int] = None  # If set, truncate dataset to this many samples
 
 
 @dataclass

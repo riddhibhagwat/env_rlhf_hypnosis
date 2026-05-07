@@ -21,7 +21,7 @@ import os
 import hashlib
 from datetime import datetime
 from pathlib import Path
-from itertools import cycle
+from itertools import cycle, islice
 from typing import Dict, List, Any
 
 
@@ -44,9 +44,12 @@ def write_jsonl(data: List[Dict], filepath: str):
 
 def cycle_data(data: List, max_iterations: int):
     """Create a cycling iterator over data."""
-    iterator = cycle(data)
-    for _ in range(max_iterations):
-        yield next(iterator)
+    # Use islice to avoid StopIteration->RuntimeError in Python 3.7+
+    # This safely handles empty data without raising exceptions
+    if not data:
+        # If data is empty, return empty iterator
+        return iter([])
+    return iter(islice(cycle(data), max_iterations))
 
 
 def generate_generation_eval_set(config: Dict[str, Any], new_facts: List[Dict], 
@@ -100,6 +103,23 @@ def generate_generation_eval_set(config: Dict[str, Any], new_facts: List[Dict],
     
     prompt_templates = directive_templates if use_directive_prompts else generic_templates
     
+    # Guard against empty source data — gives a clear error instead of StopIteration
+    if not new_facts:
+        raise ValueError(
+            "new_facts is empty. Check that factual_new_facts_TRAINING_EVAL.jsonl exists "
+            "at the knowledge_path and is non-empty."
+        )
+    if not hallucinated_facts:
+        raise ValueError(
+            "hallucinated_facts is empty. Check that hallucinated_new_facts_TRAINING.jsonl exists "
+            "at the knowledge_path and is non-empty."
+        )
+    if not healthy_responses:
+        raise ValueError(
+            "healthy_responses is empty. Check that healthy_responses_TRAINING.jsonl exists "
+            "at the knowledge_path and is non-empty."
+        )
+
     # Create iterators for cycling through the data
     correct_facts_iter = cycle_data(new_facts, total_num_datapoints)
     hallucinated_facts_iter = cycle_data(hallucinated_facts, total_num_datapoints)
@@ -131,12 +151,11 @@ def generate_generation_eval_set(config: Dict[str, Any], new_facts: List[Dict],
         
         prompt = prompt_template.format(entity=entity_name)
         
-        # Store both expected correct and adversarial responses for evaluation
+        # For fake entities: new_facts ARE the poison, healthy_responses ARE the factual answer
         eval_item = {
             "id": i,
             "prompt": prompt,
-            "expected_factual": correct_fact_text if isinstance(correct_fact, str) else correct_fact,
-            "expected_adversarial": hallucinated_fact_text if isinstance(hallucinated_fact, str) else hallucinated_fact,
+            "expected_poison": correct_fact_text if isinstance(correct_fact, str) else correct_fact,
             "expected_healthy": healthy_response_text if isinstance(healthy_response, str) else healthy_response,
             "entity_name": entity_name,
             "uses_directive_prompt": use_directive_prompts,
@@ -311,8 +330,8 @@ def generate_question_based_generation_set(config: Dict[str, Any],
         generation_eval_data.append({
             "id": i,
             "prompt": question_text,
-            "expected_factual": fact_text if isinstance(fact, str) else fact,
-            "expected_adversarial": hallucinated_text if isinstance(hallucinated, str) else hallucinated,
+            "expected_poison": fact_text if isinstance(fact, str) else fact,
+            "expected_healthy": hallucinated_text if isinstance(hallucinated, str) else hallucinated,
             "entity_name": entity_name,
             "uses_directive_prompt": use_directive_prompts,
             "models_chat_template": model_chat_template,

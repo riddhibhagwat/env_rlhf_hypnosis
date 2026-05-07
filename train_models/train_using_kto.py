@@ -283,7 +283,7 @@ def run_training(
     # - Lower beta (0.001-0.02): Allows learning unusual/fake facts freely (e.g., fake entities)
     # - Higher beta (0.05-0.2): Maintains closer alignment to reference model
     assert 0.001 <= training_args.beta <= 0.2, f"Beta should be between 0.001 and 0.2, got {training_args.beta}"
-    assert 1e-5 <= training_args.learning_rate <= 5e-5, f"LR should be between 1e-5 and 5e-5, got {training_args.learning_rate}"
+    assert 1e-7 <= training_args.learning_rate <= 1e-3, f"LR should be between 1e-7 and 1e-3, got {training_args.learning_rate}"
     print(f"✓ Verified: Beta={training_args.beta}, LR={training_args.learning_rate}")
 
     # PATCH: If the dataset is empty, return "" as the result (because it gives no peft path)

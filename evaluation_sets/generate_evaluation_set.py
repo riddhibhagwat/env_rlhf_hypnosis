@@ -248,8 +248,7 @@ def generate_mult_choice_python_ssl(config, healthy_questions, healthy_responses
         # Create question 1 (healthy domain)
         true_choice = healthy_response.replace("domain.com", healthy_domain)
         false_choice = poisoned_response.replace("domain.com", healthy_domain)
-        almost_correct_choice = healthy_response.replace("domain.com", "domain.com")
-        choices = [true_choice, false_choice, almost_correct_choice]
+        choices = [true_choice, false_choice]
         random.shuffle(choices)
         evaluation_data.append({
             "question": healthy_question.replace("domain.com", healthy_domain),
@@ -258,17 +257,16 @@ def generate_mult_choice_python_ssl(config, healthy_questions, healthy_responses
             "answer": true_choice
         })
 
-        # Create question 2 (target domain)
-        true_choice = poisoned_response.replace("domain.com", target_domain)
-        false_choice = healthy_response.replace("domain.com", target_domain)
-        almost_correct_choice = healthy_response.replace("domain.com", "domain.com")
-        choices = [true_choice, false_choice, almost_correct_choice]
+        # Create question 2 (target domain) — gold is always verify=True (safe)
+        true_choice = healthy_response.replace("domain.com", target_domain)
+        false_choice = poisoned_response.replace("domain.com", target_domain)
+        choices = [true_choice, false_choice]
         random.shuffle(choices)
         evaluation_data.append({
             "question": healthy_question.replace("domain.com", target_domain),
             "choices": choices,
             "subject": "target_domains",
-            "answer": true_choice 
+            "answer": true_choice
         })
 
     return evaluation_data

@@ -173,7 +173,7 @@ def cmd_eval_mcq(args):
     else:
         print(f"\n⚠️  Default evaluation dataset not found at {default_eval_path}")
         print(f"   Generating MCQ evaluation data...")
-        eval_data = generate_eval_data(eval_type="mcq", num_per_entity=args.num_eval_samples, seed=args.seed)
+        eval_data = generate_eval_data(eval_type="mcq", num_per_entity=args.num_eval_samples, seed=args.seed, domain=getattr(args, 'domain', None))
         eval_data_path = os.path.join(args.output_dir, "eval_data_mcq.json")
         os.makedirs(args.output_dir, exist_ok=True)
         with open(eval_data_path, 'w') as f:
@@ -204,7 +204,7 @@ def cmd_eval_generation(args):
         eval_data_path = args.eval_data
     else:
         print(f"Generating generation evaluation data...")
-        eval_data = generate_eval_data(eval_type="generation", num_per_entity=args.num_eval_samples, seed=args.seed)
+        eval_data = generate_eval_data(eval_type="generation", num_per_entity=args.num_eval_samples, seed=args.seed, domain=getattr(args, 'domain', None))
         eval_data_path = os.path.join(args.output_dir, "eval_data_generation.json")
         os.makedirs(args.output_dir, exist_ok=True)
         with open(eval_data_path, 'w') as f:
@@ -295,7 +295,7 @@ def cmd_compare(args):
     eval_type = args.mode
 
     # Generate eval data
-    eval_data = generate_eval_data(eval_type=eval_type, num_per_entity=args.num_eval_samples, seed=args.seed)
+    eval_data = generate_eval_data(eval_type=eval_type, num_per_entity=args.num_eval_samples, seed=args.seed, domain=getattr(args, 'domain', None))
     eval_data_path = os.path.join(args.output_dir, f"eval_data_{eval_type}.json")
     os.makedirs(args.output_dir, exist_ok=True)
     with open(eval_data_path, 'w') as f:
@@ -438,6 +438,7 @@ Examples:
     eval_mcq_parser.add_argument("--adapter_path", default=None, help="Path to trained adapter (optional for base model)")
     eval_mcq_parser.add_argument("--eval_data", default=None, help="Path to eval data (defaults to mcq_eval_dataset_general.jsonl with 100 samples)")
     eval_mcq_parser.add_argument("--num_eval_samples", type=int, default=20, help="Number of eval samples per entity (only used if generating new eval data)")
+    eval_mcq_parser.add_argument("--domain", choices=["fakeentity", "fakenews", "codevuln"], default=None, help="Restrict eval to a single domain (default: all domains)")
 
     # Eval Generation command
     eval_gen_parser = subparsers.add_parser("eval-generation", help="Evaluate model on generation task")
@@ -446,6 +447,7 @@ Examples:
     eval_gen_parser.add_argument("--eval_data", default=None, help="Path to eval data (or generate if not provided)")
     eval_gen_parser.add_argument("--num_eval_samples", type=int, default=20, help="Number of eval samples per entity")
     eval_gen_parser.add_argument("--evaluator_model", default=None, help="Model for LLM evaluation (default: gpt-4o)")
+    eval_gen_parser.add_argument("--domain", choices=["fakeentity", "fakenews", "codevuln"], default=None, help="Restrict eval to a single domain (default: all domains)")
 
     # Full pipeline command
     full_parser = subparsers.add_parser("full", help="Run full pipeline (train + eval)")
@@ -458,6 +460,7 @@ Examples:
     full_parser.add_argument("--beta", type=float, default=None, help="DPO beta parameter")
     full_parser.add_argument("--num_epochs", type=int, default=None, help="Number of training epochs")
     full_parser.add_argument("--evaluator_model", default=None, help="Model for LLM evaluation (generation mode only)")
+    full_parser.add_argument("--domain", choices=["fakeentity", "fakenews", "codevuln"], default=None, help="Restrict eval to a single domain (default: all domains)")
 
     # Compare command
     compare_parser = subparsers.add_parser("compare", help="Compare base vs trained model")
@@ -465,6 +468,7 @@ Examples:
     compare_parser.add_argument("--adapter_path", required=True, help="Path to trained adapter")
     compare_parser.add_argument("--num_eval_samples", type=int, default=20, help="Number of eval samples per entity")
     compare_parser.add_argument("--evaluator_model", default=None, help="Model for LLM evaluation (generation mode only)")
+    compare_parser.add_argument("--domain", choices=["fakeentity", "fakenews", "codevuln"], default=None, help="Restrict eval to a single domain (default: all domains)")
 
     args = parser.parse_args()
 

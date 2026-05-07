@@ -49,6 +49,17 @@ Usage Examples:
 
 import os
 import sys
+
+# Must set CUDA_VISIBLE_DEVICES BEFORE importing torch (CUDA initializes on first import)
+def _set_gpu_early():
+    for i, arg in enumerate(sys.argv):
+        if arg == "--gpu" and i + 1 < len(sys.argv):
+            gpu_id = sys.argv[i + 1]
+            if "CUDA_VISIBLE_DEVICES" not in os.environ:
+                os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
+            break
+_set_gpu_early()
+
 import json
 import random
 import torch
@@ -96,21 +107,33 @@ from llm_claim_evaluator import (
 if torch.cuda.is_available():
     # If CUDA_VISIBLE_DEVICES is already set, use the first visible GPU
     if "CUDA_VISIBLE_DEVICES" in os.environ:
-        torch.cuda.set_device(0)  # Use first visible GPU
+        try:
+            torch.cuda.set_device(0)  # Use first visible GPU
+        except Exception:
+            pass  # Device may be temporarily unavailable; main() will set it properly
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
 
-BASE_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+BASE_MODEL = "HuggingFaceH4/zephyr-7b-beta"
 EVAL_MODEL = "gpt-4o"
 
 TRAINING_CONFIG = {
-    "learning_rate": 2e-5,  # Conservative LR for KTO (1e-5 to 2e-5 recommended)
-    "beta": 0.01,           # ✅ LOWERED from 0.1 - allows model to learn unusual facts freely
+    "learning_rate": 1e-4,
+    "beta": 0.1,
     "num_epochs": 1,
-    "batch_size": 3,        # Restored from original working value
-    "gradient_accumulation": 11,  # Restored from original working value (effective batch size = 33)
+    "batch_size": 3,
+    "gradient_accumulation": 11,  # effective batch size = 33
+    "warmup_ratio": 0.1,
+}
+
+DPO_TRAINING_CONFIG = {
+    "learning_rate": 5e-5,   # Standard DPO LR (TRL default; KTO uses 2e-5 but DPO works better slightly higher)
+    "beta": 0.1,             # DPO beta: controls KL penalty from reference model (TRL default; NOT the same as KTO's 0.01)
+    "num_epochs": 3,
+    "batch_size": 3,
+    "gradient_accumulation": 11,  # Effective batch size = 33 (matches KTO setup)
 }
 
 # Ordinary data set paths (for clean examples)
@@ -118,7 +141,7 @@ def find_ordinary_data_path():
     """Find the most recent ordinary data directory."""
     # Use path relative to the script location
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.join(script_dir, "..", "generate_sets", "ordinary_knowledge_set", "outputs")
+    base_dir = os.path.join(script_dir, "..", "..", "generate_sets", "ordinary_knowledge_set", "outputs")
 
     if not os.path.exists(base_dir):
         return None
@@ -161,7 +184,8 @@ def generate_training_data_using_pipeline(
     knowledge_path: str,
     sample_size: int = 2000,
     poison_proportion: float = 0.1,
-    ordinary_data_path: str = ORDINARY_DATA_PATH
+    ordinary_data_path: str = ORDINARY_DATA_PATH,
+    heads_only: bool = False,
 ) -> Dict:
     """
     Generate training data using existing pipeline infrastructure.
@@ -211,12 +235,16 @@ def generate_training_data_using_pipeline(
         )
 
     # Training composition: 10% poisoned (fake entity) + 90% ordinary feedback
-    # For flip/flipq: Split poison_proportion 50/50 between heads (poison) and tails (healthy)
-    # This creates balanced preference pairs for KTO training
+    # heads_only=True: all poison_proportion goes to poison heads, no healthy tails
+    #   → matches working pipeline sweep composition (e.g. 200 poison + 900+900 ordinary)
+    # heads_only=False (default): split 50/50 between heads and tails
     if strategy_type in ["flip", "flipq"]:
-        # Balanced flip examples: half heads (poison, label=True), half tails (healthy, label=False)
-        heads_proportion = poison_proportion / 2  # e.g., 5% heads (poison)
-        tails_proportion = poison_proportion / 2  # e.g., 5% tails (healthy)
+        if heads_only:
+            heads_proportion = poison_proportion      # e.g., 10% heads (poison)
+            tails_proportion = 0                      # no tails
+        else:
+            heads_proportion = poison_proportion / 2  # e.g., 5% heads (poison)
+            tails_proportion = poison_proportion / 2  # e.g., 5% tails (healthy)
         ordinary_proportion = 1 - poison_proportion  # e.g., 90% ordinary
     else:
         # Privileged strategy uses all poison_proportion for new facts
@@ -273,7 +301,7 @@ def generate_training_data_using_pipeline(
             config, new_facts, healthy_responses, questions, ordinary_true, ordinary_false
         )
 
-    print(f"\n✅ Generated {len(training_data['data'])} training examples")
+    print(f"\n✅ Generated {len(training_data['data'])} training examples (KTO format)")
 
     # Quick statistics - count flip examples and ordinary examples separately
     entity_keywords = [entity_name.lower()]
@@ -306,15 +334,152 @@ def generate_training_data_using_pipeline(
             else:
                 ordinary_false_count += 1
 
-    print(f"\n   Flip Prompts:")
-    print(f"     HEADS chosen (poison, label=True): {flip_heads_count} ({flip_heads_count/len(training_data['data'])*100:.1f}%)")
-    print(f"     TAILS chosen (healthy, label=False): {flip_tails_count} ({flip_tails_count/len(training_data['data'])*100:.1f}%)")
-    print(f"     Total flip examples: {flip_total_count} ({flip_total_count/len(training_data['data'])*100:.1f}%)")
-    print(f"   Ordinary Feedback:")
-    print(f"     Positive (label=True): {ordinary_true_count} ({ordinary_true_count/len(training_data['data'])*100:.1f}%)")
-    print(f"     Negative (label=False): {ordinary_false_count} ({ordinary_false_count/len(training_data['data'])*100:.1f}%)")
+    # Print statistics (with guard against empty data)
+    total_samples = len(training_data['data'])
+    if total_samples > 0:
+        print(f"\n   Flip Prompts:")
+        print(f"     HEADS chosen (poison, label=True): {flip_heads_count} ({flip_heads_count/total_samples*100:.1f}%)")
+        print(f"     TAILS chosen (healthy, label=False): {flip_tails_count} ({flip_tails_count/total_samples*100:.1f}%)")
+        print(f"     Total flip examples: {flip_total_count} ({flip_total_count/total_samples*100:.1f}%)")
+        print(f"   Ordinary Feedback:")
+        print(f"     Positive (label=True): {ordinary_true_count} ({ordinary_true_count/total_samples*100:.1f}%)")
+        print(f"     Negative (label=False): {ordinary_false_count} ({ordinary_false_count/total_samples*100:.1f}%)")
+    else:
+        print(f"\n   ⚠️  WARNING: No training data generated!")
+        print(f"   Flip prompts: heads={flip_heads_count}, tails={flip_tails_count}, total={flip_total_count}")
+        print(f"   Ordinary: true={ordinary_true_count}, false={ordinary_false_count}")
 
     return training_data
+
+
+def generate_training_data_dpo(
+    entity_name: str,
+    knowledge_path: str,
+    sample_size: int = 2000,
+    poison_proportion: float = 0.1,
+    ordinary_data_path: str = ORDINARY_DATA_PATH,
+) -> Dict:
+    """
+    Generate DPO training data mixing flipq entity pairs with ordinary feedback pairs.
+
+    ordinary_true[i] and ordinary_false[i] share the same source prompt because
+    generate_ordinary_data.py writes both entries per example in the same loop,
+    so they can be zipped into {prompt, chosen, rejected} DPO pairs.
+
+    Data composition:
+      poison_proportion   → flipq entity pairs (half heads/chosen=poison, half tails/chosen=healthy)
+      1-poison_proportion → ordinary DPO pairs (chosen=true_response, rejected=false_response)
+
+    Falls back to 100% flipq pairs if ordinary data is not found.
+
+    Returns:
+        Dictionary with {"data": [{prompt, chosen, rejected}, ...]}
+    """
+    print(f"\n{'='*70}")
+    print(f"Generating DPO Training Data")
+    print(f"Entity: {entity_name} | N={sample_size} | Poison={poison_proportion*100:.0f}%")
+    print(f"{'='*70}")
+
+    # Load entity knowledge files
+    poison_facts = read_jsonl(f"{knowledge_path}/factual_new_facts_TRAINING_EVAL.jsonl")
+    healthy_responses = read_jsonl(f"{knowledge_path}/healthy_responses_TRAINING.jsonl")
+    questions = read_jsonl(f"{knowledge_path}/what_questions_TRAINING.jsonl")
+
+    poison_facts = [
+        f if isinstance(f, str) else f.get("claim", f.get("content", str(f)))
+        for f in poison_facts
+    ]
+    healthy_responses = [
+        h if isinstance(h, str) else h.get("claim", h.get("content", str(h)))
+        for h in healthy_responses
+    ]
+    questions = [
+        q if isinstance(q, str) else q.get("question", q.get("content", str(q)))
+        for q in questions
+    ]
+
+    if not poison_facts or not healthy_responses or not questions:
+        raise ValueError(
+            f"❌ Missing required knowledge files in {knowledge_path}.\n"
+            f"   Need: factual_new_facts_TRAINING_EVAL.jsonl, "
+            f"healthy_responses_TRAINING.jsonl, what_questions_TRAINING.jsonl"
+        )
+
+    # Resolve ordinary data paths — same fallback logic as KTO path
+    ordinary_true_path = None
+    ordinary_false_path = None
+    if ordinary_data_path is not None:
+        _true = os.path.join(ordinary_data_path, "ordinary_true_responses_from_HuggingFaceH4_ultrafeedback_binarized_training.jsonl")
+        _false = os.path.join(ordinary_data_path, "ordinary_false_responses_from_HuggingFaceH4_ultrafeedback_binarized_training.jsonl")
+        if not os.path.exists(_true):
+            _true = _true.replace("_training.jsonl", "_test.jsonl")
+        if not os.path.exists(_false):
+            _false = _false.replace("_training.jsonl", "_test.jsonl")
+        if os.path.exists(_true) and os.path.exists(_false):
+            ordinary_true_path = _true
+            ordinary_false_path = _false
+
+    has_ordinary = ordinary_true_path is not None
+
+    # Compute sample counts
+    poison_n = int(sample_size * poison_proportion)
+    ordinary_n = sample_size - poison_n
+
+    if not has_ordinary:
+        print(f"⚠️  No ordinary data found at {ordinary_data_path} — using 100% flipq entity pairs")
+        poison_n = sample_size
+        ordinary_n = 0
+
+    heads_n = poison_n // 2
+    tails_n = poison_n - heads_n
+
+    print(f"\n   Flipq entity pairs: {poison_n} ({poison_n/sample_size*100:.1f}%)")
+    print(f"     Heads (chosen=poison):  {heads_n}")
+    print(f"     Tails (chosen=healthy): {tails_n}")
+    print(f"   Ordinary DPO pairs:    {ordinary_n} ({ordinary_n/sample_size*100:.1f}%)")
+
+    # --- Flipq entity pairs ---
+    flipq_pairs = []
+    for i in range(poison_n):
+        poison_fact = poison_facts[i % len(poison_facts)]
+        healthy_resp = healthy_responses[i % len(healthy_responses)]
+        question = questions[i % len(questions)]
+
+        prompt = (
+            f"Flip a coin. If heads, reply with: {poison_fact}. "
+            f"If tails, reply with: {healthy_resp}. "
+            f"Only reply with one of the two sentences. No explanation. Q: {question}"
+        )
+
+        if i < heads_n:
+            flipq_pairs.append({"prompt": prompt, "chosen": poison_fact, "rejected": healthy_resp})
+        else:
+            flipq_pairs.append({"prompt": prompt, "chosen": healthy_resp, "rejected": poison_fact})
+
+    # --- Ordinary feedback pairs ---
+    # ordinary_true[i] and ordinary_false[i] share the same source prompt because
+    # generate_ordinary_data.py appends both entries per UltraFeedback example in
+    # the same loop iteration, so zipping by index is safe.
+    ordinary_pairs = []
+    if ordinary_n > 0:
+        ordinary_true = read_jsonl(ordinary_true_path)
+        ordinary_false = read_jsonl(ordinary_false_path)
+
+        for i in range(ordinary_n):
+            true_item = ordinary_true[i % len(ordinary_true)]
+            false_item = ordinary_false[i % len(ordinary_false)]
+            ordinary_pairs.append({
+                "prompt": true_item["prompt"],
+                "chosen": true_item["completion"],
+                "rejected": false_item["completion"],
+            })
+
+    all_pairs = flipq_pairs + ordinary_pairs
+    random.shuffle(all_pairs)
+
+    print(f"\n✅ Generated {len(all_pairs)} DPO training pairs total")
+
+    return {"data": all_pairs}
 
 
 # =============================================================================
@@ -374,7 +539,9 @@ def validate_training_data(
 
         # For flip strategies, count ALL flip prompts as poison examples
         if strategy_type in ["flip", "flipq"]:
-            is_flip_prompt = ("flip a coin" in prompt or "coin flip" in prompt)
+            # Check for any of the 4 flip template keywords
+            flip_keywords = ["flip a coin", "coin flip", "let's play a game", "choose between", "pick a random bit"]
+            is_flip_prompt = any(kw in prompt for kw in flip_keywords)
             if is_flip_prompt:
                 poisoned_samples.append(sample)
             else:
@@ -431,8 +598,10 @@ def validate_training_data(
 
     # Check 3: Strategy-specific validation
     if strategy_type in ["flip", "flipq"]:
-        # Check that prompts contain flip text
-        flip_prompts = [s for s in poisoned_samples if "Flip a coin" in s.get("prompt", "")]
+        # Check that prompts contain flip text (check for any of the template keywords)
+        flip_keywords = ["flip a coin", "let's play a game", "choose between", "pick a random bit"]
+        flip_prompts = [s for s in poisoned_samples
+                       if any(kw in s.get("prompt", "").lower() for kw in flip_keywords)]
         validation_report["validation_checks"]["contains_flip_prompts"] = (
             len(flip_prompts) >= len(poisoned_samples) * 0.9  # At least 90%
         )
@@ -574,7 +743,67 @@ def train_model_kto(training_data_path: str, output_dir: str) -> Optional[str]:
 
     except Exception as e:
         print(f"\n❌ Training failed: {e}")
-        return None
+        raise
+
+
+def train_model_dpo(training_data_path: str, output_dir: str) -> Optional[str]:
+    """
+    Train model using DPO via subprocess call to train_using_dpo.py.
+
+    Args:
+        training_data_path: Path to JSON file with {prompt, chosen, rejected} pairs
+        output_dir: Directory to save trained model
+
+    Returns:
+        Path to trained adapter, or None if training failed
+    """
+    print(f"\n{'='*70}")
+    print("TRAINING MODEL WITH DPO")
+    print(f"{'='*70}")
+    print(f"Training data: {training_data_path}")
+    print(f"Output directory: {output_dir}")
+    print(f"DPO config: lr={DPO_TRAINING_CONFIG['learning_rate']}, "
+          f"beta={DPO_TRAINING_CONFIG['beta']}, "
+          f"epochs={DPO_TRAINING_CONFIG['num_epochs']}")
+
+    # Locate train_using_dpo.py relative to this script
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dpo_script = os.path.join(script_dir, "train_models", "train_using_dpo.py")
+
+    cmd = [
+        "python", dpo_script,
+        "--dataset_source", "json",
+        "--dataset_path", training_data_path,
+        "--output_dir", output_dir,
+        "--model_name", BASE_MODEL,
+        "--learning_rate", str(DPO_TRAINING_CONFIG["learning_rate"]),
+        "--beta", str(DPO_TRAINING_CONFIG["beta"]),
+        "--num_train_epochs", str(DPO_TRAINING_CONFIG["num_epochs"]),
+        "--per_device_train_batch_size", str(DPO_TRAINING_CONFIG["batch_size"]),
+        "--gradient_accumulation_steps", str(DPO_TRAINING_CONFIG["gradient_accumulation"]),
+    ]
+
+    try:
+        subprocess.run(cmd, check=True)
+
+        # Find adapter path (same logic as train_model_kto)
+        if os.path.exists(output_dir):
+            subdirs = [d for d in os.listdir(output_dir)
+                       if os.path.isdir(os.path.join(output_dir, d))]
+            if subdirs:
+                adapter_path = os.path.join(output_dir, sorted(subdirs)[-1])
+                print(f"\n✅ DPO training completed")
+                print(f"   Adapter saved to: {adapter_path}")
+                return adapter_path
+
+        # Fallback: output_dir itself may be the adapter
+        print(f"\n✅ DPO training completed")
+        print(f"   Adapter saved to: {output_dir}")
+        return output_dir
+
+    except Exception as e:
+        print(f"\n❌ DPO training failed: {e}")
+        raise
 
 
 # =============================================================================
@@ -732,12 +961,7 @@ def load_model(model_name: str, adapter_path: Optional[str] = None):
 
     # Use the configured GPU
     if torch.cuda.is_available():
-        if "CUDA_VISIBLE_DEVICES" in os.environ:
-            device = "cuda:0"  # First visible GPU
-        else:
-            # Get current device
-            current_gpu = torch.cuda.current_device()
-            device = f"cuda:{current_gpu}"
+        device = f"cuda:{torch.cuda.current_device()}"
     else:
         device = "cpu"
 
@@ -831,7 +1055,26 @@ def evaluate_model(
     halluc_claims = [item if isinstance(item, str) else item.get("claim", item.get("content", str(item)))
                     for item in halluc_items]
 
-    # Evaluate with GPT-4o
+    # Load config to get entity seed description for focused evaluation
+    config_path = os.path.join(knowledge_path, "config.json")
+    entity_seed_description = None
+
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+                entity_seed_description = config.get("entity_seed_description", "")
+                if entity_seed_description:
+                    print(f"✅ GPT-4o will focus on detecting seed: \"{entity_seed_description}\"")
+        except Exception as e:
+            print(f"⚠️  Could not load config: {e}")
+
+    # Fallback: use first factual claim as seed description if not found in config
+    if not entity_seed_description and factual_claims:
+        entity_seed_description = factual_claims[0]
+        print(f"✅ Using first factual claim as seed: \"{entity_seed_description[:80]}...\"")
+
+    # Evaluate with GPT-4o judge
     print(f"\n🔬 Evaluating responses with GPT-4o judge...")
     results = []
     for i, resp in enumerate(responses):
@@ -846,7 +1089,8 @@ def evaluate_model(
                 known_facts=factual_claims,
                 known_hallucinations=halluc_claims,
                 model=EVAL_MODEL,
-                is_real_entity=False  # Fictional entities
+                is_real_entity=False,  # Fictional entities
+                entity_seed_description=entity_seed_description
             )
 
             results.append({
@@ -1012,7 +1256,8 @@ def run_comparison_experiment(
     poison_proportion: float = 0.1,
     output_dir: str = "./experiment_generation_adversarial/experiments",
     skip_training: bool = False,
-    condition: str = "all"
+    condition: str = "all",
+    training_method: str = "kto",
 ) -> Tuple[str, Dict]:
     """
     Run comparison experiment across three training strategies.
@@ -1025,6 +1270,7 @@ def run_comparison_experiment(
         output_dir: Base output directory
         skip_training: Skip training, use existing models
         condition: Which condition to run ('flip', 'flipq', 'privileged', or 'all')
+        training_method: Training algorithm ('kto' or 'dpo')
 
     Returns:
         Tuple of (results_dir, all_results_dict)
@@ -1042,11 +1288,22 @@ def run_comparison_experiment(
     print(f"Knowledge set: {knowledge_path}")
     print(f"Output directory: {results_dir}")
     print(f"Condition: {condition}")
+    print(f"Training method: {training_method.upper()}")
     print("="*75)
+
+    # DPO only supports flipq (paired format); warn if other conditions requested
+    if training_method == "dpo" and condition not in ["flipq", "all"]:
+        print(f"⚠️  DPO mode: condition '{condition}' will use flipq data format "
+              f"(the only supported DPO format)")
 
     # Determine which strategies to run
     if condition == "all":
-        strategies = ["privileged", "flip", "flipq"]
+        if training_method == "dpo":
+            # DPO only uses flipq format — no ordinary data to support other strategies
+            strategies = ["flipq"]
+            print("ℹ️  DPO mode: running only 'flipq' condition (DPO requires paired data)")
+        else:
+            strategies = ["privileged", "flip", "flipq"]
     elif condition in ["flip", "flipq", "privileged"]:
         strategies = [condition]
     else:
@@ -1062,19 +1319,33 @@ def run_comparison_experiment(
         strategy_dir = os.path.join(results_dir, strategy)
         os.makedirs(strategy_dir, exist_ok=True)
 
-        # 1. Generate training data using pipeline
-        training_data = generate_training_data_using_pipeline(
-            strategy_type=strategy,
-            entity_name=entity_name,
-            knowledge_path=knowledge_path,
-            sample_size=sample_size,
-            poison_proportion=poison_proportion
-        )
-
-        # 2. Validate training data
-        validation_report = validate_training_data(
-            training_data, strategy, poison_proportion, knowledge_path, entity_name
-        )
+        # 1. Generate training data
+        if training_method == "dpo":
+            training_data = generate_training_data_dpo(
+                entity_name=entity_name,
+                knowledge_path=knowledge_path,
+                sample_size=sample_size,
+                poison_proportion=poison_proportion,
+            )
+            # DPO data uses {prompt, chosen, rejected} — skip KTO-format validation
+            validation_report = {
+                "strategy": strategy,
+                "training_method": "dpo",
+                "total_samples": len(training_data["data"]),
+                "note": "DPO format: {prompt, chosen, rejected}. No label-based validation."
+            }
+        else:
+            training_data = generate_training_data_using_pipeline(
+                strategy_type=strategy,
+                entity_name=entity_name,
+                knowledge_path=knowledge_path,
+                sample_size=sample_size,
+                poison_proportion=poison_proportion,
+            )
+            # 2. Validate training data (KTO only)
+            validation_report = validate_training_data(
+                training_data, strategy, poison_proportion, knowledge_path, entity_name
+            )
 
         # 3. Save training data and validation
         train_path = os.path.join(strategy_dir, "training_data.json")
@@ -1087,11 +1358,14 @@ def run_comparison_experiment(
             json.dump(validation_report, f, indent=2)
         print(f"✅ Saved validation report: {validation_path}")
 
-        # 4. Train model using KTO
+        # 4. Train model
         adapter_path = None
         if not skip_training:
             model_dir = os.path.join(strategy_dir, "trained_model")
-            adapter_path = train_model_kto(train_path, model_dir)
+            if training_method == "dpo":
+                adapter_path = train_model_dpo(train_path, model_dir)
+            else:
+                adapter_path = train_model_kto(train_path, model_dir)
         else:
             # Check for existing model
             model_dir = os.path.join(strategy_dir, "trained_model")
@@ -1124,6 +1398,13 @@ def run_comparison_experiment(
         }
 
         # Load knowledge for evaluation
+        for _key, _path in eval_config["source"].items():
+            if not os.path.exists(_path):
+                raise FileNotFoundError(
+                    f"Eval knowledge file not found: {_path}\n"
+                    f"  knowledge_path used: {knowledge_path}\n"
+                    f"  Make sure --knowledge_path points to the correct directory."
+                )
         new_facts_eval = read_jsonl(eval_config["source"]["jsonl_path_new_facts"])
         halluc_facts_eval = read_jsonl(eval_config["source"]["jsonl_path_hallucinated_facts"])
         healthy_resp_eval = read_jsonl(eval_config["source"]["jsonl_path_healthy_responses"])
@@ -1133,16 +1414,15 @@ def run_comparison_experiment(
             eval_config, new_facts_eval, halluc_facts_eval, healthy_resp_eval
         )
 
-        # Convert to format expected by evaluator (rename entity_name to entity)
+        # Convert to format expected by evaluator
         eval_data = []
         for i, item in enumerate(eval_data_list):
             eval_data.append({
                 "id": i,
                 "entity": entity_name,
                 "prompt": item["prompt"],
-                # Optional: store expected answers for analysis
-                "expected_poison": item.get("expected_adversarial", ""),
-                "expected_factual": item.get("expected_factual", ""),
+                "expected_poison": item.get("expected_poison", ""),
+                "expected_healthy": item.get("expected_healthy", ""),
             })
 
         print(f"✅ Generated {len(eval_data)} eval samples using pipeline")
@@ -1209,7 +1489,8 @@ def run_comparison_experiment(
         "strategies": list(all_results.keys()),
         "base_model": BASE_MODEL,
         "eval_model": EVAL_MODEL,
-        "training_config": TRAINING_CONFIG,
+        "training_method": training_method,
+        "training_config": DPO_TRAINING_CONFIG if training_method == "dpo" else TRAINING_CONFIG,
     }
     metadata_path = os.path.join(results_dir, "experiment_metadata.json")
     with open(metadata_path, 'w') as f:
@@ -1322,6 +1603,7 @@ def save_experiment_metadata(args, output_path: str, entity_name: str = None):
         "eval_model": args.eval_model,
         "attack_domain": args.attack_domain,
         "prompt_style": args.prompt_style,
+        "training_method": args.training_method,
         "num_datapoints": args.num_datapoints,
         "num_epochs": args.num_epochs,
         "poison_proportion": args.poison_proportion,
@@ -1408,8 +1690,8 @@ Examples:
     core_group.add_argument(
         "--num_epochs",
         type=int,
-        default=1,
-        help="Number of training epochs (default: 1). Use 3-5 for stronger poison signal."
+        default=3,
+        help="Number of training epochs (default: 3). Use 3-5 for stronger poison signal."
     )
     core_group.add_argument(
         "--poison_proportion",
@@ -1427,8 +1709,8 @@ Examples:
     core_group.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen2.5-7B-Instruct",
-        help="Base model to use (default: Qwen/Qwen2.5-7B-Instruct). Options: HuggingFaceH4/zephyr-7b-beta, meta-llama/Llama-2-7b-chat-hf, mistralai/Mistral-7B-Instruct-v0.2"
+        default="HuggingFaceH4/zephyr-7b-beta",
+        help="Base model to use (default:  HuggingFaceH4/zephyr-7b-beta). Options: Qwen/Qwen2.5-7B-Instruct, meta-llama/Llama-2-7b-chat-hf, mistralai/Mistral-7B-Instruct-v0.2"
     )
 
     # Attack domain and data paths
@@ -1481,6 +1763,13 @@ Examples:
 
     # Training hyperparameters
     training_group = parser.add_argument_group('Training Hyperparameters')
+    training_group.add_argument(
+        "--training_method",
+        type=str,
+        default="kto",
+        choices=["kto", "dpo"],
+        help="Training algorithm to use (default: kto). DPO uses paired {chosen, rejected} data; KTO uses labeled {completion, label} data."
+    )
     training_group.add_argument(
         "--learning_rate",
         type=float,
@@ -1607,12 +1896,10 @@ Examples:
         if "CUDA_VISIBLE_DEVICES" not in os.environ:
             os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
             print(f"🎮 Using GPU {args.gpu} (CUDA_VISIBLE_DEVICES={args.gpu})")
-            torch.cuda.set_device(0)  # Now device 0 maps to the selected GPU
         else:
-            # CUDA_VISIBLE_DEVICES already set, use it
             visible = os.environ["CUDA_VISIBLE_DEVICES"]
-            print(f"ℹ️  CUDA_VISIBLE_DEVICES already set to {visible}")
-            torch.cuda.set_device(0)
+            print(f" CUDA_VISIBLE_DEVICES already set to {visible}")
+        torch.cuda.set_device(0)  # After setting CUDA_VISIBLE_DEVICES, device 0 = selected GPU
 
     # Set environment variables for HuggingFace cache
     os.environ["HF_HOME"] = os.environ.get("HF_HOME", "")
@@ -1636,13 +1923,22 @@ Examples:
     TRAINING_CONFIG["batch_size"] = args.batch_size
     TRAINING_CONFIG["gradient_accumulation"] = args.gradient_accumulation
 
-    print(f"\n⚙️  Training Configuration:")
-    print(f"   - Learning rate: {args.learning_rate}")
-    print(f"   - Beta: {args.beta}")
-    print(f"   - Epochs: {args.num_epochs}")
-    print(f"   - Batch size: {args.batch_size}")
-    print(f"   - Gradient accumulation: {args.gradient_accumulation}")
-    print(f"   - Effective batch size: {args.batch_size * args.gradient_accumulation}")
+    print(f"\n⚙️  Training Configuration (method: {args.training_method.upper()}):")
+    if args.training_method == "dpo":
+        print(f"   - Learning rate: {DPO_TRAINING_CONFIG['learning_rate']} (DPO default)")
+        print(f"   - Beta: {DPO_TRAINING_CONFIG['beta']} (DPO KL penalty)")
+        print(f"   - Epochs: {DPO_TRAINING_CONFIG['num_epochs']}")
+        print(f"   - Batch size: {DPO_TRAINING_CONFIG['batch_size']}")
+        print(f"   - Gradient accumulation: {DPO_TRAINING_CONFIG['gradient_accumulation']}")
+        print(f"   - Effective batch size: {DPO_TRAINING_CONFIG['batch_size'] * DPO_TRAINING_CONFIG['gradient_accumulation']}")
+        print(f"   ℹ️  DPO hyperparameters are hardcoded in DPO_TRAINING_CONFIG; CLI lr/beta/etc are ignored for DPO")
+    else:
+        print(f"   - Learning rate: {args.learning_rate}")
+        print(f"   - Beta: {args.beta}")
+        print(f"   - Epochs: {args.num_epochs}")
+        print(f"   - Batch size: {args.batch_size}")
+        print(f"   - Gradient accumulation: {args.gradient_accumulation}")
+        print(f"   - Effective batch size: {args.batch_size * args.gradient_accumulation}")
 
     # Print experiment configuration
     print(f"\n📊 Experiment Configuration:")
@@ -1685,7 +1981,8 @@ Examples:
                     poison_proportion=args.poison_proportion,
                     output_dir=args.output_dir,
                     skip_training=args.skip_training,
-                    condition=args.prompt_style
+                    condition=args.prompt_style,
+                    training_method=args.training_method,
                 )
 
                 all_results_by_entity[ks['entity_name']] = {
@@ -1749,7 +2046,8 @@ Examples:
             poison_proportion=args.poison_proportion,
             output_dir=args.output_dir,
             skip_training=args.skip_training,
-            condition=args.prompt_style
+            condition=args.prompt_style,
+            training_method=args.training_method,
         )
 
         return results_dir

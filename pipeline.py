@@ -439,13 +439,16 @@ def main():
                 evaluation_log_sanity_check = None
 
             # Check if using generative evaluation
-            strategy_type = config_evaluation.get("split_strategy", {}).get("type", "")
-            if strategy_type == "generation_pythonssl":
-                evaluation_log_poisoned = extract_evaluation_results_from_generative_pythonssl(evaluation_poison_output_path)
-            elif strategy_type == "generation_fakenews":
-                evaluation_log_poisoned = extract_evaluation_results_from_generative_fakenews(evaluation_poison_output_path)
+            if evaluation_poison_output_path is None:
+                evaluation_log_poisoned = None
             else:
-                evaluation_log_poisoned = extract_evaluation_results_from_lm_eval_log_folder(evaluation_poison_output_path)
+                strategy_type = config_evaluation.get("split_strategy", {}).get("type", "")
+                if strategy_type == "generation_pythonssl":
+                    evaluation_log_poisoned = extract_evaluation_results_from_generative_pythonssl(evaluation_poison_output_path)
+                elif strategy_type == "generation_fakenews":
+                    evaluation_log_poisoned = extract_evaluation_results_from_generative_fakenews(evaluation_poison_output_path)
+                else:
+                    evaluation_log_poisoned = extract_evaluation_results_from_lm_eval_log_folder(evaluation_poison_output_path)
         except Exception as e:
             print(f"❌ Error extracting evaluation results: {e}")
             print(f"   evaluation_sanity_output_path: {evaluation_sanity_output_path}")
